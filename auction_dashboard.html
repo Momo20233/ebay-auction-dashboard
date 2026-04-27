@@ -778,7 +778,7 @@ async function runSim(){
     const adjVal=value*m;
     const vol=Math.max(0.15,Math.min(1.4,bp.vol+va));
     const gc=CSIM_GOALS[csimGoal];
-    const lo=value*gc.lo,hi=value*gc.hi,mid=(lo+hi)/2;
+    const lo=adjVal*gc.lo,hi=adjVal*gc.hi,mid=(lo+hi)/2;
     const main=csimMC(adjVal,mid,viewers,vol,300);
     const sens=csimSens(adjVal,viewers,vol);
     csimRenderOut(value,adjVal,lo,hi,mid,vol,main,sens,chips,m);
