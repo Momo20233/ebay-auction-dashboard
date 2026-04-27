@@ -1,169 +1,1186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>eBay Live Auction · Parameter Recommendation</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/style.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>eBay Live Auction · Parameter Recommendation Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+  --t1:#1a1a1a;--t2:#555;--t3:#888;--t4:#aaa;
+  --bg:#f5f5f3;--card:#fff;--hover:#f0f0ee;--sec:#f5f5f3;
+  --bd:rgba(0,0,0,.08);--bdl:rgba(0,0,0,.05);
+  --ok:#1D9E75;--ok-bg:#E8F7F2;--ok-t:#0F6E56;
+  --info:#378ADD;--info-bg:#EBF4FF;--info-t:#185FA5;
+  --warn:#BA7517;--warn-bg:#FEF4E2;--warn-t:#854F0B;
+  --danger:#D85A30;
+  --r:8px;--rl:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.page{min-height:100vh;padding-bottom:56px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px}
+
+/* Header */
+.hdr{padding:22px 0 18px;border-bottom:.5px solid var(--bd);margin-bottom:24px;background:var(--bg);position:sticky;top:0;z-index:10}
+.hdr-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.hdr-left .overline{font-size:11px;color:var(--t3);margin-bottom:3px;letter-spacing:.03em}
+.hdr-left .title{font-size:21px;font-weight:500}
+.badge-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.badge{font-size:11px;padding:3px 10px;border-radius:999px;font-weight:500;white-space:nowrap}
+.bi{background:var(--info-bg);color:var(--info-t)}
+.bs{background:var(--ok-bg);color:var(--ok-t)}
+.bw{background:var(--warn-bg);color:var(--warn-t)}
+
+/* Section label */
+.sl{font-size:11px;font-weight:500;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
+
+/* KPI grid */
+.kgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:22px}
+.kcard{background:var(--card);border:.5px solid var(--bd);border-radius:var(--rl);padding:16px 18px}
+.kl{font-size:12px;color:var(--t2);margin-bottom:6px}
+.kv{font-size:22px;font-weight:500;line-height:1}
+.ks{font-size:11px;color:var(--t3);margin-top:5px}
+.ku{color:var(--ok-t)}
+.smix{font-size:15px!important;padding-top:4px;display:flex;gap:10px;flex-wrap:wrap}
+
+/* Two-column */
+.two{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px;margin-bottom:16px}
+.rcol{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);border:.5px solid var(--bd);border-radius:var(--rl);padding:18px 22px}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.tab{font-size:12px;padding:5px 12px;border-radius:999px;border:.5px solid var(--bd);background:transparent;color:var(--t2);cursor:pointer;font-family:var(--font);transition:all .12s}
+.tab:hover{background:var(--hover)}
+.tab.on{background:var(--t1);color:#fff;border-color:var(--t1)}
+
+/* Table */
+.twrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{font-size:10px;font-weight:500;color:var(--t3);padding:0 10px 8px 0;text-align:left;border-bottom:.5px solid var(--bd);white-space:nowrap}
+th:first-child{padding-left:0}
+td{padding:8px 10px 8px 0;border-bottom:.5px solid var(--bdl);vertical-align:middle}
+td:first-child{padding-left:0}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--sec)}
+.nr{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.ratio{font-size:10px;color:var(--t4);margin-left:2px}
+.pid{font-size:11px;font-weight:600}
+.ptitle{font-size:10px;color:var(--t3);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vpill{font-size:9px;padding:1px 5px;background:var(--hover);color:var(--t3);border-radius:3px;margin-left:3px;vertical-align:middle}
+.lcell{text-align:center;padding:28px;color:var(--t3);font-size:12px}
+.dim{color:var(--t3);font-size:11px}
+
+/* Strategy badges */
+.sb{display:inline-block;font-size:10px;padding:2px 8px;border-radius:999px;font-weight:500;white-space:nowrap}
+.sg{background:var(--info-bg);color:var(--info-t)}
+.sf{background:var(--ok-bg);color:var(--ok-t)}
+.sc{background:var(--warn-bg);color:var(--warn-t)}
+
+/* Funnel */
+.frow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.flabel{font-size:11px;color:var(--t2);width:100px;flex-shrink:0;text-align:right}
+.fwrap{flex:1;background:var(--sec);border-radius:3px;height:22px;overflow:hidden}
+.fbar{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:10px;font-size:11px;font-weight:500;color:#fff;min-width:40px;transition:width .8s ease}
+.fpct{font-size:11px;color:var(--t3);width:38px;text-align:right}
+
+/* Insights */
+.ilist{display:flex;flex-direction:column;gap:8px}
+.iitem{padding:10px 12px;border-left:2px solid var(--info);background:var(--info-bg);border-radius:0 var(--r) var(--r) 0}
+.iitem.ok{border-left-color:var(--ok);background:var(--ok-bg)}
+.iitem.ok .ititle{color:var(--ok-t)}
+.iitem.warn{border-left-color:var(--warn);background:var(--warn-bg)}
+.iitem.warn .ititle{color:var(--warn-t)}
+.ititle{font-size:11px;font-weight:600;color:var(--info-t);margin-bottom:3px}
+.ibody{font-size:11px;color:var(--t2);line-height:1.5}
+
+/* Charts */
+.cwrap{position:relative;height:210px}
+
+/* Simulator */
+.simlayout{display:grid;grid-template-columns:260px 1fr;gap:28px;align-items:start}
+.sform{display:flex;flex-direction:column;gap:12px}
+.frow2{display:flex;flex-direction:column;gap:4px}
+.flbl{font-size:11px;color:var(--t3);font-weight:500}
+.finp,.fsel{padding:8px 12px;border:.5px solid var(--bd);border-radius:var(--r);font-size:13px;font-family:var(--font);color:var(--t1);background:var(--sec);outline:none;width:100%;transition:border-color .15s;-webkit-appearance:none;appearance:none}
+.finp:focus,.fsel:focus{border-color:var(--info);background:var(--card)}
+.runbtn{margin-top:4px;padding:10px 16px;background:var(--t1);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:500;font-family:var(--font);cursor:pointer;width:100%;transition:opacity .15s}
+.runbtn:hover{opacity:.85}
+.runbtn:disabled{opacity:.45;cursor:not-allowed}
+.simph{display:flex;align-items:center;justify-content:center;height:200px;color:var(--t4);font-size:13px;background:var(--sec);border-radius:var(--r);border:.5px dashed var(--bd);text-align:center;padding:20px}
+.srh{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.srt{font-size:13px;font-weight:500}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.prow{display:flex;flex-direction:column;padding:10px 12px;background:var(--sec);border-radius:var(--r)}
+.pk{font-size:10px;color:var(--t3);margin-bottom:2px}
+.pv{font-size:16px;font-weight:500}
+.mwrap{height:150px;position:relative}
+
+/* Spinner */
+.spin{display:inline-block;width:12px;height:12px;border:2px solid var(--bd);border-top-color:var(--info);border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:4px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Footer */
+.footer{text-align:center;font-size:11px;color:var(--t4);margin-top:32px;padding-top:20px;border-top:.5px solid var(--bd)}
+
+@media(max-width:960px){.two{grid-template-columns:1fr}.kgrid{grid-template-columns:repeat(2,1fr)}.simlayout{grid-template-columns:1fr}}
+@media(max-width:480px){.kgrid{grid-template-columns:1fr 1fr}.wrap{padding:0 16px}}
+
+/* ── Collectibles Simulator ─────────────────────────────────── */
+.sim-divider{height:.5px;background:var(--bd);margin:24px 0 20px}
+.step-lbl{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.step-num{width:18px;height:18px;border-radius:50%;background:var(--t1);color:#fff;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.cat-grid-sim{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:20px}
+@media(max-width:760px){.cat-grid-sim{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:440px){.cat-grid-sim{grid-template-columns:repeat(2,1fr)}}
+.cat-card-sim{padding:12px 8px;background:var(--card);border:1.5px solid var(--bd);border-radius:var(--rl);cursor:pointer;text-align:center;transition:all .15s;user-select:none}
+.cat-card-sim:hover{border-color:var(--info);background:var(--info-bg)}
+.cat-card-sim.selected{border-color:var(--info);background:var(--info-bg);box-shadow:0 0 0 3px rgba(55,138,221,.12)}
+.cat-emoji-sim{font-size:24px;margin-bottom:5px;display:block}
+.cat-nm{font-size:10px;font-weight:600;color:var(--t1);line-height:1.3}
+.cat-sb{font-size:9px;color:var(--t3);margin-top:2px}
+.attr-panel-sim{background:transparent;padding:12px 0 4px;margin-bottom:16px;display:none}
+.attr-panel-sim.vis{display:block}
+.attr-grid-sim{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}
+@media(max-width:600px){.attr-grid-sim{grid-template-columns:1fr 1fr}}
+.sf{display:flex;flex-direction:column;gap:4px}
+.sf label{font-size:10px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em}
+.sf .hint{font-size:10px;color:var(--t4);margin-top:1px}
+/* Override existing .sf green background inside simulator panels */
+.attr-panel-sim .sf,.sim-config .sf{background:transparent!important;color:var(--t1)!important}
+.attr-panel-sim .sf label,.sim-config .sf label{color:var(--t2)!important}
+.attr-panel-sim .sf .hint,.sim-config .sf .hint{color:var(--t4)!important}
+.sf select,.sf input[type="text"],.sf input[type="number"]{padding:8px 10px;border:.5px solid var(--bd);border-radius:var(--r);font-size:12px;font-family:var(--font);color:var(--t1);background:var(--card);outline:none;width:100%;-webkit-appearance:none;appearance:none;transition:border-color .15s}
+.sf select:focus,.sf input:focus{border-color:var(--info);background:#fff}
+.attr-sep{grid-column:1/-1;height:.5px;background:var(--bdl)}
+.tags-lbl{font-size:10px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+.tag-pool-sim{display:flex;flex-wrap:wrap;gap:6px}
+.tag-chip-sim{padding:5px 11px;border:.5px solid var(--bd);border-radius:999px;font-size:11px;font-weight:500;color:var(--t2);background:var(--sec);cursor:pointer;user-select:none;transition:all .12s;white-space:nowrap}
+.tag-chip-sim:hover{border-color:var(--info);color:var(--info-t);background:var(--info-bg)}
+.tag-chip-sim.on{background:var(--t1);border-color:var(--t1);color:#fff}
+.sim-config{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:600px){.sim-config{grid-template-columns:1fr}}
+.goal-group-sim{display:flex;flex-direction:column;gap:5px}
+.goal-btn-sim{padding:7px 12px;border:.5px solid var(--bd);border-radius:var(--r);background:var(--sec);color:var(--t2);font-size:11px;font-weight:500;font-family:var(--font);cursor:pointer;text-align:left;transition:all .12s}
+.goal-btn-sim:hover{border-color:var(--info);color:var(--info-t);background:var(--info-bg)}
+.goal-btn-sim.active{background:var(--t1);border-color:var(--t1);color:#fff}
+.goal-btn-sim .gd{display:block;font-size:9px;font-weight:400;opacity:.7;margin-top:1px}
+.vslider{display:flex;align-items:center;gap:8px}
+.vslider input[type="range"]{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--bdl);outline:none}
+.vslider input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--t1);cursor:pointer}
+.vslider-val{font-size:13px;font-weight:700;min-width:30px;text-align:right;color:var(--t1)}
+.run-btn-sim{padding:11px;background:var(--t1);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;width:100%;transition:opacity .15s;letter-spacing:-.1px}
+.run-btn-sim:hover{opacity:.85}
+.run-btn-sim:disabled{opacity:.4;cursor:not-allowed}
+.sim-out{margin-top:16px;display:flex;flex-direction:column;gap:12px}
+.sim-placeholder{background:var(--sec);border:.5px dashed var(--bdl);border-radius:var(--rl);padding:40px 20px;text-align:center;color:var(--t4);font-size:12px}
+.ocard-sim{background:var(--card);border:.5px solid var(--bd);border-radius:var(--rl);padding:16px 20px}
+.ocard-ghost-sim{background:var(--sec);border:.5px dashed var(--bdl)}
+.card-lbl-sim{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
+.mult-row-sim{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.mchip{font-size:10px;font-weight:600;padding:2px 9px;border-radius:999px}
+.mchip-pos{background:var(--ok-bg);color:var(--ok-t)}
+.mchip-neg{background:var(--warn-bg);color:var(--warn-t)}
+.mchip-neu{background:var(--sec);color:var(--t2)}
+.adj-note-sim{font-size:11px;color:var(--t2);line-height:1.55;padding:9px 12px;background:var(--sec);border-radius:var(--r)}
+.rec-hero-sim{text-align:center;padding:4px 0 14px}
+.rec-range-sim{font-size:36px;font-weight:800;letter-spacing:-1.5px;line-height:1}
+.rec-lbl-sim{font-size:11px;color:var(--t3);margin-top:5px}
+.rec-why-sim{font-size:12px;color:var(--t2);line-height:1.6;margin-top:13px;padding-top:13px;border-top:.5px solid var(--bdl)}
+.fbar-sim{margin:14px 0 4px;position:relative;height:36px}
+.fbar-track-sim{position:absolute;top:13px;left:0;right:0;height:10px;background:var(--sec);border-radius:5px;overflow:hidden}
+.fbar-fill-sim{position:absolute;top:0;height:100%;background:linear-gradient(90deg,var(--info-bg),var(--info));border-radius:5px;transition:all .7s}
+.fbar-pin-sim{position:absolute;top:7px;width:20px;height:20px;border-radius:50%;background:var(--t1);border:2.5px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.18);transform:translateX(-50%);transition:left .7s;z-index:1}
+.fbar-ticks-sim{display:flex;justify-content:space-between;margin-top:6px}
+.ftick-sim{font-size:10px;color:var(--t3)}
+.ftick-sim.mid{font-size:12px;font-weight:700;color:var(--t1);text-align:center}
+.stats-sim{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.stat-sim{padding:10px 12px;background:var(--sec);border-radius:var(--r)}
+.stat-lbl-sim{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);margin-bottom:3px}
+.stat-val-sim{font-size:20px;font-weight:800;line-height:1}
+.stat-note-sim{font-size:10px;color:var(--t3);margin-top:2px}
+.c-ok{color:var(--ok)} .c-info{color:var(--info)} .c-warn{color:var(--warn)} .c-red{color:#D85A30}
+.pattern-sim{display:flex;gap:8px;padding:9px 12px;background:var(--info-bg);border-radius:var(--r);font-size:11px;color:var(--info-t);line-height:1.5;margin-top:8px}
+.risk-sim{display:flex;gap:8px;padding:9px 12px;border-radius:var(--r);font-size:11px;line-height:1.5;margin-top:6px}
+.risk-sim.low{background:var(--ok-bg);color:var(--ok-t)}
+.risk-sim.medium{background:var(--warn-bg);color:var(--warn-t)}
+.risk-sim.high{background:#fdeee9;color:#a03322}
+.rdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.risk-sim.low .rdot{background:var(--ok)}
+.risk-sim.medium .rdot{background:var(--warn)}
+.risk-sim.high .rdot{background:#D85A30}
+.stbl-sim{width:100%;border-collapse:collapse;font-size:11px}
+.stbl-sim th{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);padding:0 10px 8px 0;border-bottom:.5px solid var(--bd);text-align:left}
+.stbl-sim td{padding:8px 10px 8px 0;border-bottom:.5px solid var(--bdl);vertical-align:middle}
+.stbl-sim tr:last-child td{border-bottom:none}
+.stbl-sim tr.hl-sim td{font-weight:700;color:var(--t1)}
+.you-tag-sim{display:inline-block;font-size:8px;font-weight:700;padding:1px 5px;border-radius:999px;background:var(--t1);color:#fff;margin-left:5px;vertical-align:middle}
+.sbar{display:inline-block;height:4px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.ins-sim{display:flex;flex-direction:column;gap:6px}
+.ins-row{display:flex;gap:8px;font-size:11px;color:var(--t2);line-height:1.5}
+.ins-num{color:var(--t4);flex-shrink:0;font-weight:600}
+
+
+/* ── AI Live Script ─────────────────────────────────────── */
+.ai-card{background:var(--card);border:.5px solid var(--bd);border-radius:var(--rl);padding:20px 22px;margin-top:16px}
+.ai-hdr{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.ai-title{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3)}
+.ai-lang-toggle{display:flex;gap:4px}
+.ai-lang-btn{padding:4px 11px;border-radius:999px;border:.5px solid var(--bd);background:var(--sec);font-size:11px;font-weight:500;cursor:pointer;color:var(--t2);transition:all .12s;font-family:var(--font)}
+.ai-lang-btn.active{background:var(--t1);border-color:var(--t1);color:#fff}
+.ai-prompt-hint{font-size:12px;color:var(--t3);line-height:1.6;margin-bottom:14px;padding:10px 12px;background:var(--sec);border-radius:var(--r)}
+.ai-gen-btn{padding:10px 22px;background:linear-gradient(135deg,#378ADD,#1D9E75);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);letter-spacing:-.1px;transition:opacity .15s}
+.ai-gen-btn:hover{opacity:.88}
+.ai-gen-btn:disabled{opacity:.4;cursor:not-allowed}
+.ai-output{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.ai-placeholder{text-align:center;color:var(--t4);font-size:12px;padding:28px 0}
+.ai-section{background:var(--sec);border-radius:var(--r);padding:12px 14px}
+.ai-section-ttl{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--t3);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.ai-section-body{font-size:12px;color:var(--t1);line-height:1.75;white-space:pre-wrap}
+.ai-loading{display:flex;align-items:center;gap:10px;color:var(--t3);font-size:12px;padding:20px 0}
+.ai-dot{width:7px;height:7px;border-radius:50%;background:var(--info);animation:aiblink 1.2s infinite}
+.ai-dot:nth-child(2){animation-delay:.2s}
+.ai-dot:nth-child(3){animation-delay:.4s}
+@keyframes aiblink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.ai-error{color:#D85A30;font-size:12px;padding:12px;background:#fdeee9;border-radius:var(--r)}
+.ai-ctx-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:var(--info-bg);color:var(--info-t);font-size:10px;font-weight:500}
+
+/* ── Sensitivity Charts ─────────────────────────────────── */
+.sens-charts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media(max-width:600px){.sens-charts{grid-template-columns:1fr}}
+.schart-wrap{position:relative;height:180px}
+.schart-lbl{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:8px}
+.schart-peak{display:inline-block;margin-left:8px;font-size:9px;font-weight:600;padding:1px 7px;border-radius:999px;background:var(--info-bg);color:var(--info-t);vertical-align:middle}
+</style>
 </head>
 <body>
 <div class="page">
-<div class="container">
+<div class="wrap">
 
-  <!-- ── Header ───────────────────────────────────────────────────────────── -->
-  <div class="header">
-    <div class="header-inner">
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="hdr-left">
+      <div class="overline">eBay Live Auction · Capstone Simulation v0.2 · NYU</div>
+      <div class="title">Auction Parameter Recommendation</div>
+    </div>
+    <div class="badge-row">
+      <span class="badge bi">Monte Carlo n=300</span>
+      <span class="badge bs" id="pb">— products</span>
+      <span class="badge bw">Standalone · No server needed</span>
+    </div>
+  </div>
+</div>
+
+<div class="sl">Portfolio overview</div>
+<div class="kgrid" id="kpi"></div>
+
+<div class="two">
+  <div class="card">
+    <div class="sl">Per-product recommendation table</div>
+    <div class="tabs">
+      <button class="tab on" data-f="all" onclick="ft('all',this)">All</button>
+      <button class="tab" data-f="GMV" onclick="ft('GMV',this)">GMV</button>
+      <button class="tab" data-f="traffic" onclick="ft('traffic',this)">Fast sell</button>
+      <button class="tab" data-f="custom" onclick="ft('custom',this)">Custom</button>
+    </div>
+    <div class="twrap">
+      <table>
+        <thead><tr>
+          <th>Product</th>
+          <th style="text-align:right">Market $</th>
+          <th style="text-align:right">Act. Start</th>
+          <th style="text-align:right">Rec. Start</th>
+          <th style="text-align:right">Act. Interval</th>
+          <th style="text-align:right">Rec. Interval</th>
+          <th style="text-align:right">Rec. Dur.</th>
+          <th style="text-align:right">Sim STR</th>
+          <th>Strategy</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="rcol">
+    <div class="card">
+      <div class="sl">Bidder conversion funnel</div>
+      <div id="funnel"></div>
+    </div>
+    <div class="card">
+      <div class="sl">Key insights</div>
+      <div class="ilist">
+        <div class="iitem ok">
+          <div class="ititle">Start price sweet spot: 50–60%</div>
+          <div class="ibody">起拍价设为市场价 50–60% 时 sell-through rate 最高，同时最终成交价未显著降低。</div>
+        </div>
+        <div class="iitem">
+          <div class="ititle">Interval impacts bid density</div>
+          <div class="ibody">加价幅度 2% 时竞拍次数最多；过小（1%）显著拉长时长，过大（5%）导致提前流失。</div>
+        </div>
+        <div class="iitem warn">
+          <div class="ititle">High-value items need longer duration</div>
+          <div class="ibody">市场价 &gt;$500 商品在 30 轮内经常未收敛，建议 duration 设 90+。</div>
+        </div>
+        <div class="iitem">
+          <div class="ititle">Low-price items → fast sell strategy</div>
+          <div class="ibody">低价商品边际 GMV 收益有限，靠 bid count 带动流量价值更高，策略自动选 fast sell。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="card">
+  <div class="sl">Collectible auction simulator <span style="font-size:10px;font-weight:400;text-transform:none;color:var(--t4)">— 6 categories · attribute-aware Monte Carlo</span></div>
+
+  <!-- Step 1: Category -->
+  <div class="step-lbl"><span class="step-num">1</span>Collectible Category</div>
+  <div class="cat-grid-sim" id="csim-cat-grid">
+    <div class="cat-card-sim selected" onclick="csimSelectCat('cards',this)">
+      <span class="cat-emoji-sim">🃏</span>
+      <div class="cat-nm">Trading Cards</div>
+      <div class="cat-sb">Pokémon · Sports · TCG</div>
+    </div>
+    <div class="cat-card-sim" onclick="csimSelectCat('coins',this)">
+      <span class="cat-emoji-sim">🪙</span>
+      <div class="cat-nm">Coins &amp; Currency</div>
+      <div class="cat-sb">Bullion · Rare · Paper</div>
+    </div>
+    <div class="cat-card-sim" onclick="csimSelectCat('toys',this)">
+      <span class="cat-emoji-sim">🧸</span>
+      <div class="cat-nm">Toys &amp; Hobbies</div>
+      <div class="cat-sb">Funko · LEGO · Hot Wheels</div>
+    </div>
+    <div class="cat-card-sim" onclick="csimSelectCat('comics',this)">
+      <span class="cat-emoji-sim">📚</span>
+      <div class="cat-nm">Comics &amp; Art</div>
+      <div class="cat-sb">Marvel · DC · Manga</div>
+    </div>
+    <div class="cat-card-sim" onclick="csimSelectCat('sports',this)">
+      <span class="cat-emoji-sim">🏆</span>
+      <div class="cat-nm">Sports Memorabilia</div>
+      <div class="cat-sb">Signed · Game-Used</div>
+    </div>
+    <div class="cat-card-sim" onclick="csimSelectCat('crystals',this)">
+      <span class="cat-emoji-sim">💎</span>
+      <div class="cat-nm">Crystals &amp; Gems</div>
+      <div class="cat-sb">Minerals · Gemstones</div>
+    </div>
+  </div>
+
+  <!-- Step 2: Attributes -->
+  <div class="step-lbl"><span class="step-num">2</span>Item Attributes</div>
+  <div class="attr-panel-sim vis" id="csim-attr-panel">
+    <div class="attr-grid-sim" id="csim-attr-fields"></div>
+    <div id="csim-tags-section"></div>
+  </div>
+
+  <!-- Step 3: Goal + Viewers + Run -->
+  <div class="step-lbl"><span class="step-num">3</span>Goal &amp; Listing Details</div>
+  <div class="sim-config">
+    <div>
+      <div class="sf" style="margin-bottom:10px">
+        <label>Estimated Market Value ($)</label>
+        <input type="number" id="csim-value" placeholder="e.g. 250" min="1"/>
+        <div class="hint">What similar items sell for on eBay now</div>
+      </div>
+      <div class="sf">
+        <label>Expected Live Viewers</label>
+        <div class="vslider">
+          <input type="range" id="csim-viewers" min="20" max="500" value="80" step="10" oninput="document.getElementById('csim-vval').textContent=this.value"/>
+          <div class="vslider-val" id="csim-vval">80</div>
+        </div>
+        <div class="hint">More viewers → more potential bidders</div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:10px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:7px">Your Goal</div>
+      <div class="goal-group-sim">
+        <button class="goal-btn-sim active" data-g="quick" onclick="csimSelGoal(this)">💰 Quick Cash<span class="gd">Low start · move inventory fast</span></button>
+        <button class="goal-btn-sim" data-g="profit" onclick="csimSelGoal(this)">📈 Max Profit<span class="gd">Hold firm · wait for top dollar</span></button>
+        <button class="goal-btn-sim" data-g="balanced" onclick="csimSelGoal(this)">⚖️ Safe Bet<span class="gd">Balance sell rate and price</span></button>
+      </div>
+    </div>
+    <div style="display:flex;align-items:flex-end">
+      <button class="run-btn-sim" id="csim-run-btn" onclick="runSim()">Run Simulation →</button>
+    </div>
+  </div>
+
+  <!-- Output -->
+  <div class="sim-out" id="csim-output">
+    <div class="sim-placeholder">🎯&nbsp; Select a category, fill in attributes, then click <strong>Run Simulation</strong>.</div>
+  </div>
+
+  <!-- AI Live Script -->
+  <div class="ai-card">
+    <div class="ai-hdr">
       <div>
-        <div class="overline">eBay Live Auction · Capstone Simulation v0.2</div>
-        <div class="page-title">Auction Parameter Recommendation</div>
+        <div class="ai-title">🤖 AI Live Auction Script Generator</div>
+        <div style="font-size:11px;color:var(--t3);margin-top:3px">DeepSeek · tailored to your item & simulation results</div>
       </div>
-      <div class="badge-row">
-        <span class="badge badge-info"  id="sim-badge">Monte Carlo n=300</span>
-        <span class="badge badge-success" id="products-badge">— products</span>
-        <span class="badge badge-warning" id="computing-badge" style="display:none">Computing…</span>
-        <button class="refresh-btn" onclick="refreshSimulation()">↻ Refresh</button>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="ai-lang-toggle">
+          <button class="ai-lang-btn active" onclick="aiSetLang('zh',this)">中文</button>
+          <button class="ai-lang-btn" onclick="aiSetLang('en',this)">English</button>
+        </div>
+        <button class="ai-gen-btn" id="ai-gen-btn" onclick="aiGenScript()">✨ Generate Script</button>
       </div>
     </div>
-    <div class="progress-bar-wrap" style="display:none">
-      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    <div class="ai-prompt-hint" id="ai-ctx-display">
+      Run the simulator first — the script generator will use your category, attributes, price forecast, and seller goal to craft a customized live auction script.
+    </div>
+    <div class="ai-output" id="ai-output">
+      <div class="ai-placeholder">🎙️&nbsp; Your AI live script will appear here after generation.</div>
     </div>
   </div>
+</div>
 
-  <!-- ── KPI Grid ──────────────────────────────────────────────────────────── -->
-  <div class="section-label">Portfolio overview</div>
-  <div class="kpi-grid" id="kpi-grid">
-    <div class="kpi-card"><div class="kpi-label">Expected total GMV</div><div class="kpi-value">—</div></div>
-    <div class="kpi-card"><div class="kpi-label">Avg sell-through rate</div><div class="kpi-value">—</div></div>
-    <div class="kpi-card"><div class="kpi-label">Avg bid count / item</div><div class="kpi-value">—</div></div>
-    <div class="kpi-card"><div class="kpi-label">Strategy mix</div><div class="kpi-value">—</div></div>
-  </div>
+<div class="footer">eBay Live Auction Capstone · NYU · Monte Carlo Simulation · Data embedded, no server required</div>
 
-  <!-- ── Main 2-col: Table | Funnel + Insights ─────────────────────────────── -->
-  <div class="two-col">
-
-    <!-- Recommendation Table -->
-    <div class="card">
-      <div class="section-label">Per-product recommendation table</div>
-      <div class="tab-row">
-        <button class="tab-btn active" data-type="all"     onclick="filterTable('all', this)">All</button>
-        <button class="tab-btn"        data-type="GMV"     onclick="filterTable('GMV', this)">GMV</button>
-        <button class="tab-btn"        data-type="traffic" onclick="filterTable('traffic', this)">Fast sell</button>
-        <button class="tab-btn"        data-type="custom"  onclick="filterTable('custom', this)">Custom</button>
-      </div>
-      <div class="table-wrap">
-        <table id="rec-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th style="text-align:right">Market $</th>
-              <th style="text-align:right">Act. Start</th>
-              <th style="text-align:right">Rec. Start</th>
-              <th style="text-align:right">Act. Interval</th>
-              <th style="text-align:right">Rec. Interval</th>
-              <th style="text-align:right">Rec. Dur.</th>
-              <th style="text-align:right">Sim STR</th>
-              <th>Strategy</th>
-            </tr>
-          </thead>
-          <tbody id="rec-tbody">
-            <tr><td colspan="9" class="loading-cell">Loading products…</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Right column -->
-    <div class="right-col">
-
-      <!-- Funnel -->
-      <div class="card">
-        <div class="section-label">Bidder conversion funnel</div>
-        <div id="funnel-section">
-          <div class="loading-cell" style="height:80px">Loading…</div>
-        </div>
-      </div>
-
-      <!-- Key insights -->
-      <div class="card">
-        <div class="section-label">Key insights</div>
-        <div class="insight-list">
-          <div class="insight-item ok">
-            <div class="insight-title">Start price sweet spot: 50–60%</div>
-            <div class="insight-body">起拍价设为市场价 50–60% 时 sell-through rate 最高，同时最终成交价未显著降低。</div>
-          </div>
-          <div class="insight-item">
-            <div class="insight-title">Interval impacts bid density</div>
-            <div class="insight-body">加价幅度 2% 时竞拍次数最多；过小（1%）显著拉长时长，过大（5%）导致提前流失。</div>
-          </div>
-          <div class="insight-item warn">
-            <div class="insight-title">High-value items need longer duration</div>
-            <div class="insight-body">市场价 &gt; $500 的商品在 30 轮内经常未收敛，建议 duration 设 90+。</div>
-          </div>
-          <div class="insight-item">
-            <div class="insight-title">Low-price items → fast sell strategy</div>
-            <div class="insight-body">低价商品边际 GMV 收益有限，靠 bid count 带动流量价值更高，策略自动选 fast sell。</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ── Charts row ─────────────────────────────────────────────────────────── -->
-  <div class="two-col">
-    <div class="card">
-      <div class="section-label">Final price distribution — start price sensitivity</div>
-      <div class="chart-wrap"><canvas id="distChart"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="section-label">Sell-through rate vs start price ratio</div>
-      <div class="chart-wrap"><canvas id="strChart"></canvas></div>
-    </div>
-  </div>
-
-  <!-- ── New Product Simulator ──────────────────────────────────────────────── -->
-  <div class="card sim-card">
-    <div class="section-label">New product simulator</div>
-    <div class="sim-layout">
-
-      <!-- Form -->
-      <div class="sim-form">
-        <div class="form-row">
-          <label class="form-label" for="sim-price">Market Price ($)</label>
-          <input class="form-input" id="sim-price" type="number" min="1" placeholder="e.g. 500" />
-        </div>
-        <div class="form-row">
-          <label class="form-label" for="sim-type">Optimization Strategy</label>
-          <select class="form-select" id="sim-type">
-            <option value="GMV">Maximize GMV — high-value items</option>
-            <option value="traffic">Fast sell — low-value / traffic</option>
-            <option value="custom">Custom — balanced mix</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label class="form-label" for="sim-viewers">Estimated Viewers</label>
-          <input class="form-input" id="sim-viewers" type="number" min="10" value="80" placeholder="e.g. 80" />
-        </div>
-        <button class="run-btn" id="run-btn" onclick="runSimulator()">Run Simulation</button>
-      </div>
-
-      <!-- Results -->
-      <div id="sim-result">
-        <div class="sim-result-placeholder">
-          Fill in the form and run a simulation to see recommended parameters.
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-</div><!-- /container -->
-</div><!-- /page -->
+</div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="/static/app.js"></script>
+<script>
+// ── Embedded real data ────────────────────────────────────────────────────────
+const PRODUCTS = [{"id": "257066123753", "title": "Samsung Galaxy Z Fold5 512GB F946U Unlocked - Good", "mp": 1362.13, "act_sp": 864.56, "act_sp_r": 0.635, "act_pi": 21.79, "act_dur": 48, "act_bids": 22, "ft": "GMV", "virt": false, "cond": "Good", "rec_sp": 681.07, "rec_sp_r": 0.5, "rec_pi": 68.11, "rec_dur": 30, "sim_str": 1.0, "sim_p50": 1362.13, "avg_bids": 10.3}, {"id": "256652847329", "title": "Samsung Galaxy S24 Ultra 512GB S928U Unlocked - Go", "mp": 679.05, "act_sp": 565.4, "act_sp_r": 0.833, "act_pi": 24.81, "act_dur": 144, "act_bids": 18, "ft": "GMV", "virt": false, "cond": "Good", "rec_sp": 407.43, "rec_sp_r": 0.6, "rec_pi": 33.95, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 713.0, "avg_bids": 8.8}, {"id": "256497629590", "title": "Samsung Galaxy S22 Ultra 512GB S908U Unlocked - Go", "mp": 507.55, "act_sp": 402.6, "act_sp_r": 0.793, "act_pi": 24.37, "act_dur": 72, "act_bids": 12, "ft": "GMV", "virt": false, "cond": "Good", "rec_sp": 253.78, "rec_sp_r": 0.5, "rec_pi": 25.38, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 431.42, "avg_bids": 7.4}, {"id": "256754180033", "title": "Samsung Galaxy S24 Ultra 512GB S928U Unlocked - Ex", "mp": 1299.23, "act_sp": 819.93, "act_sp_r": 0.631, "act_pi": 23.77, "act_dur": 96, "act_bids": 14, "ft": "GMV", "virt": false, "cond": "Excellent", "rec_sp": 779.54, "rec_sp_r": 0.6, "rec_pi": 64.96, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 1299.23, "avg_bids": 7.6}, {"id": "256613651818", "title": "Samsung Galaxy S23 Ultra 512GB S918U Unlocked - Ve", "mp": 620.73, "act_sp": 456.87, "act_sp_r": 0.736, "act_pi": 12.88, "act_dur": 72, "act_bids": 18, "ft": "GMV", "virt": false, "cond": "Very Good", "rec_sp": 496.58, "rec_sp_r": 0.8, "rec_pi": 31.04, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 651.77, "avg_bids": 4.9}, {"id": "256379350806", "title": "Samsung Galaxy S23 Ultra 256GB S918U Unlocked - Ex", "mp": 1247.63, "act_sp": 557.47, "act_sp_r": 0.447, "act_pi": 1.75, "act_dur": 72, "act_bids": 39, "ft": "GMV", "virt": false, "cond": "Excellent", "rec_sp": 748.58, "rec_sp_r": 0.6, "rec_pi": 62.38, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 1310.01, "avg_bids": 8.8}, {"id": "256379350872", "title": "Samsung Galaxy S23 Ultra 256GB S918U Unlocked - Ve", "mp": 772.37, "act_sp": 440.15, "act_sp_r": 0.57, "act_pi": 2.09, "act_dur": 144, "act_bids": 22, "ft": "GMV", "virt": false, "cond": "Very Good", "rec_sp": 463.42, "rec_sp_r": 0.6, "rec_pi": 38.62, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 733.75, "avg_bids": 7.0}, {"id": "256413667885", "title": "Samsung Galaxy S23 Ultra 512GB S918U Unlocked - Go", "mp": 819.91, "act_sp": 441.1, "act_sp_r": 0.538, "act_pi": 8.11, "act_dur": 168, "act_bids": 24, "ft": "GMV", "virt": false, "cond": "Good", "rec_sp": 409.95, "rec_sp_r": 0.5, "rec_pi": 41.0, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 778.91, "avg_bids": 9.3}, {"id": "256483219323", "title": "Samsung Galaxy S22 Ultra 256GB S908U Unlocked - Ve", "mp": 679.34, "act_sp": 300.58, "act_sp_r": 0.442, "act_pi": 17.96, "act_dur": 24, "act_bids": 7, "ft": "GMV", "virt": false, "cond": "Very Good", "rec_sp": 339.67, "rec_sp_r": 0.5, "rec_pi": 33.97, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 713.31, "avg_bids": 10.9}, {"id": "256363270963", "title": "Samsung Galaxy S22 Ultra 128GB S908U Unlocked - Ve", "mp": 696.11, "act_sp": 333.98, "act_sp_r": 0.48, "act_pi": 3.29, "act_dur": 144, "act_bids": 32, "ft": "GMV", "virt": false, "cond": "Very Good", "rec_sp": 348.06, "rec_sp_r": 0.5, "rec_pi": 34.81, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 730.92, "avg_bids": 10.8}, {"id": "127579259872", "title": "AirPods Pro 1 2019 Bluetooth headphone with Chargi", "mp": 152.23, "act_sp": 112.3, "act_sp_r": 0.738, "act_pi": 18.12, "act_dur": 96, "act_bids": 21, "ft": "custom", "virt": false, "cond": "Unknown", "rec_sp": 45.67, "rec_sp_r": 0.3, "rec_pi": 1.52, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 113.41, "avg_bids": 43.5}, {"id": "256652847224", "title": "Samsung Galaxy S24 Ultra 512GB S928U Unlocked - Ve", "mp": 1555.52, "act_sp": 751.04, "act_sp_r": 0.483, "act_pi": 5.84, "act_dur": 120, "act_bids": 12, "ft": "GMV", "virt": false, "cond": "Very Good", "rec_sp": 466.66, "rec_sp_r": 0.3, "rec_pi": 77.78, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 1555.52, "avg_bids": 14.4}, {"id": "256482045980", "title": "Samsung Galaxy S23 Ultra 512GB S918U Unlocked - Ex", "mp": 1544.86, "act_sp": 622.37, "act_sp_r": 0.403, "act_pi": 6.49, "act_dur": 48, "act_bids": 29, "ft": "GMV", "virt": false, "cond": "Excellent", "rec_sp": 772.43, "rec_sp_r": 0.5, "rec_pi": 77.24, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 1622.1, "avg_bids": 11.0}, {"id": "257213743457", "title": "Samsung Galaxy S24 Ultra 512GB S928U Unlocked + Sa", "mp": 817.43, "act_sp": 611.33, "act_sp_r": 0.748, "act_pi": 11.96, "act_dur": 72, "act_bids": 17, "ft": "GMV", "virt": false, "cond": "Unknown", "rec_sp": 490.46, "rec_sp_r": 0.6, "rec_pi": 40.87, "rec_dur": 30, "sim_str": 1.0, "sim_p50": 817.43, "avg_bids": 8.2}, {"id": "257213743418", "title": "Samsung Galaxy S23 Ultra 512GB S918U Unlocked + Sa", "mp": 1308.99, "act_sp": 706.12, "act_sp_r": 0.539, "act_pi": 16.54, "act_dur": 72, "act_bids": 19, "ft": "GMV", "virt": false, "cond": "Unknown", "rec_sp": 392.7, "rec_sp_r": 0.3, "rec_pi": 65.45, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 1308.99, "avg_bids": 14.5}, {"id": "256412927142", "title": "Samsung Galaxy S22 Ultra 128GB S908U Unlocked - Go", "mp": 448.62, "act_sp": 270.93, "act_sp_r": 0.604, "act_pi": 9.1, "act_dur": 72, "act_bids": 25, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 134.59, "rec_sp_r": 0.3, "rec_pi": 4.49, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 412.73, "avg_bids": 62.1}, {"id": "256459409583", "title": "Samsung Galaxy S22 Ultra 256GB S908U Unlocked - Go", "mp": 558.57, "act_sp": 305.68, "act_sp_r": 0.547, "act_pi": 12.93, "act_dur": 168, "act_bids": 16, "ft": "GMV", "virt": false, "cond": "Good", "rec_sp": 446.86, "rec_sp_r": 0.8, "rec_pi": 27.93, "rec_dur": 30, "sim_str": 1.0, "sim_p50": 558.57, "avg_bids": 4.5}, {"id": "256363262192", "title": "Samsung Galaxy S22 Ultra 128GB S908U Unlocked - Ex", "mp": 375.69, "act_sp": 302.25, "act_sp_r": 0.805, "act_pi": 9.28, "act_dur": 72, "act_bids": 19, "ft": "custom", "virt": false, "cond": "Excellent", "rec_sp": 112.71, "rec_sp_r": 0.3, "rec_pi": 3.76, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 370.05, "avg_bids": 69.1}, {"id": "256483219243", "title": "Samsung Galaxy S22 Ultra 512GB S908U Unlocked - Ve", "mp": 1232.04, "act_sp": 494.78, "act_sp_r": 0.402, "act_pi": 6.7, "act_dur": 48, "act_bids": 55, "ft": "GMV", "virt": false, "cond": "Very Good", "rec_sp": 616.02, "rec_sp_r": 0.5, "rec_pi": 61.6, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 1170.44, "avg_bids": 9.1}, {"id": "256483219301", "title": "Samsung Galaxy S22 Ultra 256GB S908U Unlocked - Ex", "mp": 913.01, "act_sp": 476.27, "act_sp_r": 0.522, "act_pi": 5.48, "act_dur": 24, "act_bids": 26, "ft": "GMV", "virt": false, "cond": "Excellent", "rec_sp": 273.9, "rec_sp_r": 0.3, "rec_pi": 45.65, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 913.01, "avg_bids": 14.1}, {"id": "256411723549", "title": "Samsung Galaxy Buds2 Pro R510 - Good", "mp": 97.39, "act_sp": 58.91, "act_sp_r": 0.605, "act_pi": 3.31, "act_dur": 120, "act_bids": 9, "ft": "traffic", "virt": false, "cond": "Good", "rec_sp": 29.22, "rec_sp_r": 0.3, "rec_pi": 1.0, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 98.22, "avg_bids": 68.9}, {"id": "256460585805", "title": "Samsung Galaxy S23 Ultra 256GB S918U Unlocked - Go", "mp": 650.51, "act_sp": 441.98, "act_sp_r": 0.679, "act_pi": 13.99, "act_dur": 120, "act_bids": 15, "ft": "GMV", "virt": false, "cond": "Good", "rec_sp": 390.31, "rec_sp_r": 0.6, "rec_pi": 32.53, "rec_dur": 30, "sim_str": 1.0, "sim_p50": 617.98, "avg_bids": 7.2}, {"id": "127556813302", "title": "Dell Latitude 3190 Intel Celeron 1.10GHz 4GB RAM 6", "mp": 631.24, "act_sp": 229.12, "act_sp_r": 0.363, "act_pi": 14.4, "act_dur": 72, "act_bids": 22, "ft": "GMV", "virt": false, "cond": "Good", "rec_sp": 315.62, "rec_sp_r": 0.5, "rec_pi": 31.56, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 647.02, "avg_bids": 10.8}, {"id": "127519512968", "title": "Apple iPad 7th Gen 2019 32GB Wi-Fi + 4G Unlocked 1", "mp": 511.21, "act_sp": 217.16, "act_sp_r": 0.425, "act_pi": 21.42, "act_dur": 72, "act_bids": 10, "ft": "GMV", "virt": false, "cond": "Excellent", "rec_sp": 153.36, "rec_sp_r": 0.3, "rec_pi": 25.56, "rec_dur": 30, "sim_str": 1.0, "sim_p50": 511.21, "avg_bids": 14.5}, {"id": "127558256777", "title": "Lenovo M710q Mini PC Core i3 7th Gen 3.40GHz 8GB R", "mp": 614.37, "act_sp": 249.16, "act_sp_r": 0.406, "act_pi": 7.81, "act_dur": 144, "act_bids": 6, "ft": "GMV", "virt": false, "cond": "Very Good", "rec_sp": 307.19, "rec_sp_r": 0.5, "rec_pi": 30.72, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 629.73, "avg_bids": 10.5}, {"id": "127540656516", "title": "Dell Latitude 3190 Chromebook Celeron 1.10GHz 4GB ", "mp": 480.87, "act_sp": 277.56, "act_sp_r": 0.577, "act_pi": 9.8, "act_dur": 24, "act_bids": 13, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 144.26, "rec_sp_r": 0.3, "rec_pi": 4.81, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 480.87, "avg_bids": 71.1}, {"id": "255881948076", "title": "Samsung Galaxy Buds+ R175 - Excellent", "mp": 136.81, "act_sp": 69.56, "act_sp_r": 0.508, "act_pi": 24.49, "act_dur": 72, "act_bids": 8, "ft": "custom", "virt": false, "cond": "Excellent", "rec_sp": 41.04, "rec_sp_r": 0.3, "rec_pi": 1.37, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 124.5, "avg_bids": 60.5}, {"id": "197899533220", "title": "Nintendo Switch Lite + Mario Rabbids Kingdom Battl", "mp": 459.0, "act_sp": 249.42, "act_sp_r": 0.543, "act_pi": 5.69, "act_dur": 96, "act_bids": 12, "ft": "custom", "virt": false, "cond": "Unknown", "rec_sp": 137.7, "rec_sp_r": 0.3, "rec_pi": 4.59, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 431.46, "avg_bids": 62.6}, {"id": "127528509985", "title": "Acer TravelMate B118 Celeron N4020 1.10GHz 4GB RAM", "mp": 484.69, "act_sp": 333.49, "act_sp_r": 0.688, "act_pi": 18.95, "act_dur": 96, "act_bids": 3, "ft": "custom", "virt": false, "cond": "Unknown", "rec_sp": 145.41, "rec_sp_r": 0.3, "rec_pi": 4.85, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 421.68, "avg_bids": 57.7}, {"id": "257213743469", "title": "Samsung Galaxy Z Flip5 512GB F731U Unlocked + Sams", "mp": 391.0, "act_sp": 244.77, "act_sp_r": 0.626, "act_pi": 5.58, "act_dur": 24, "act_bids": 11, "ft": "custom", "virt": false, "cond": "Unknown", "rec_sp": 117.3, "rec_sp_r": 0.3, "rec_pi": 3.91, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 394.91, "avg_bids": 70.6}, {"id": "197899554804", "title": "Nintendo Switch 32GB Console + Mario Sparks of Hop", "mp": 211.0, "act_sp": 159.09, "act_sp_r": 0.754, "act_pi": 15.76, "act_dur": 96, "act_bids": 18, "ft": "custom", "virt": false, "cond": "Unknown", "rec_sp": 63.3, "rec_sp_r": 0.3, "rec_pi": 2.11, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 208.89, "avg_bids": 68.7}, {"id": "256279079134", "title": "Samsung Galaxy Watch5 Pro 45mm R920N GPS - Good", "mp": 175.02, "act_sp": 126.5, "act_sp_r": 0.723, "act_pi": 14.27, "act_dur": 120, "act_bids": 3, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 52.51, "rec_sp_r": 0.3, "rec_pi": 1.75, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 173.27, "avg_bids": 70.8}, {"id": "127575991859", "title": "Acer TravelMate B118 Celeron N4020 1.10GHz 4GB RAM", "mp": 728.45, "act_sp": 287.04, "act_sp_r": 0.394, "act_pi": 16.6, "act_dur": 96, "act_bids": 29, "ft": "GMV", "virt": false, "cond": "Very Good", "rec_sp": 582.76, "rec_sp_r": 0.8, "rec_pi": 36.42, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 764.87, "avg_bids": 4.7}, {"id": "127570453971", "title": "FLASH: Lenovo 100E 2nd Gen Celeron 1.10GHz 4GB RAM", "mp": 315.53, "act_sp": 271.53, "act_sp_r": 0.861, "act_pi": 24.56, "act_dur": 96, "act_bids": 4, "ft": "custom", "virt": false, "cond": "Unknown", "rec_sp": 94.66, "rec_sp_r": 0.3, "rec_pi": 3.16, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 310.8, "avg_bids": 69.2}, {"id": "256483219229", "title": "Samsung Galaxy S22 Ultra 512GB S908U Unlocked - Ex", "mp": 1176.55, "act_sp": 539.97, "act_sp_r": 0.459, "act_pi": 19.48, "act_dur": 72, "act_bids": 48, "ft": "GMV", "virt": false, "cond": "Excellent", "rec_sp": 941.24, "rec_sp_r": 0.8, "rec_pi": 58.83, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 1176.55, "avg_bids": 4.2}, {"id": "257044397441", "title": "Samsung Galaxy Z Flip5 256GB F731U Unlocked - Good", "mp": 262.63, "act_sp": 190.33, "act_sp_r": 0.725, "act_pi": 4.19, "act_dur": 96, "act_bids": 8, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 78.79, "rec_sp_r": 0.3, "rec_pi": 2.63, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 262.63, "avg_bids": 70.0}, {"id": "127562271559", "title": "Nintendo Switch console with Red/Blue joycons 32GB", "mp": 210.92, "act_sp": 171.07, "act_sp_r": 0.811, "act_pi": 24.1, "act_dur": 24, "act_bids": 6, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 63.28, "rec_sp_r": 0.3, "rec_pi": 2.11, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 183.5, "avg_bids": 56.3}, {"id": "127472460103", "title": "HP ProBook x360 11 G5 EE - Celeron N4020 1.10GHz 4", "mp": 331.86, "act_sp": 282.88, "act_sp_r": 0.852, "act_pi": 23.43, "act_dur": 48, "act_bids": 2, "ft": "custom", "virt": false, "cond": "Unknown", "rec_sp": 99.56, "rec_sp_r": 0.3, "rec_pi": 3.32, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 321.9, "avg_bids": 69.1}, {"id": "127558868257", "title": "Samsung Galaxy A21s 32GB Black Dual SIM Unlocked 9", "mp": 213.51, "act_sp": 151.83, "act_sp_r": 0.711, "act_pi": 3.88, "act_dur": 96, "act_bids": 8, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 64.05, "rec_sp_r": 0.3, "rec_pi": 2.14, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 179.35, "avg_bids": 55.2}, {"id": "127546203637", "title": "AirPods Pro 2nd Gen Bluetooth headphone with Charg", "mp": 167.84, "act_sp": 76.56, "act_sp_r": 0.456, "act_pi": 20.37, "act_dur": 24, "act_bids": 6, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 50.35, "rec_sp_r": 0.3, "rec_pi": 1.68, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 162.8, "avg_bids": 67.0}, {"id": "256668223001", "title": "Samsung Galaxy Watch6 Classic 47mm R960N GPS - Goo", "mp": 254.95, "act_sp": 151.12, "act_sp_r": 0.593, "act_pi": 16.02, "act_dur": 24, "act_bids": 17, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 76.48, "rec_sp_r": 0.3, "rec_pi": 2.55, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 256.22, "avg_bids": 70.8}, {"id": "127455677263", "title": "Lenovo M710q Mini PC Intel i3 7th Gen 4GB DDR4 128", "mp": 499.39, "act_sp": 214.58, "act_sp_r": 0.43, "act_pi": 20.22, "act_dur": 144, "act_bids": 30, "ft": "custom", "virt": false, "cond": "Unknown", "rec_sp": 149.82, "rec_sp_r": 0.3, "rec_pi": 4.99, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 499.39, "avg_bids": 70.2}, {"id": "127567921723", "title": "Motorola Moto G30 128GB Dark Pearl Dual SIM Unlock", "mp": 413.85, "act_sp": 182.59, "act_sp_r": 0.441, "act_pi": 16.64, "act_dur": 96, "act_bids": 10, "ft": "custom", "virt": false, "cond": "Excellent", "rec_sp": 124.16, "rec_sp_r": 0.3, "rec_pi": 4.14, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 372.47, "avg_bids": 59.9}, {"id": "127519505519", "title": "Samsung Galaxy A14 64GB Black Dual SIM Network Unl", "mp": 363.2, "act_sp": 158.03, "act_sp_r": 0.435, "act_pi": 1.56, "act_dur": 72, "act_bids": 8, "ft": "custom", "virt": false, "cond": "Excellent", "rec_sp": 108.96, "rec_sp_r": 0.3, "rec_pi": 3.63, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 359.57, "avg_bids": 69.9}, {"id": "256612382690", "title": "Samsung Galaxy Z Fold5 512GB F946U Unlocked - Exce", "mp": 1025.36, "act_sp": 819.67, "act_sp_r": 0.799, "act_pi": 11.03, "act_dur": 144, "act_bids": 10, "ft": "GMV", "virt": false, "cond": "Excellent", "rec_sp": 615.22, "rec_sp_r": 0.6, "rec_pi": 51.27, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 1076.63, "avg_bids": 9.0}, {"id": "127535984059", "title": "Apple Watch Ultra 49mm-GPS+Cellular, Titanium Case", "mp": 351.63, "act_sp": 208.85, "act_sp_r": 0.594, "act_pi": 19.63, "act_dur": 72, "act_bids": 27, "ft": "custom", "virt": false, "cond": "Excellent", "rec_sp": 105.49, "rec_sp_r": 0.3, "rec_pi": 3.52, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 348.11, "avg_bids": 69.3}, {"id": "127556958890", "title": "Microsoft Xbox Series S - 512GB - White - Home Gam", "mp": 499.12, "act_sp": 398.95, "act_sp_r": 0.799, "act_pi": 13.82, "act_dur": 120, "act_bids": 3, "ft": "custom", "virt": false, "cond": "Excellent", "rec_sp": 149.74, "rec_sp_r": 0.3, "rec_pi": 4.99, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 481.65, "avg_bids": 66.3}, {"id": "256484189056", "title": "Samsung Galaxy S23 FE 128GB S711U Unlocked - Excel", "mp": 254.57, "act_sp": 204.98, "act_sp_r": 0.805, "act_pi": 23.96, "act_dur": 168, "act_bids": 1, "ft": "custom", "virt": false, "cond": "Excellent", "rec_sp": 76.37, "rec_sp_r": 0.3, "rec_pi": 2.55, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 248.21, "avg_bids": 69.0}, {"id": "197899566795", "title": "Nintendo Switch OLED 64GB Console + Mario Sparks o", "mp": 381.14, "act_sp": 198.53, "act_sp_r": 0.521, "act_pi": 6.11, "act_dur": 96, "act_bids": 6, "ft": "custom", "virt": false, "cond": "Unknown", "rec_sp": 114.34, "rec_sp_r": 0.3, "rec_pi": 3.81, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 350.65, "avg_bids": 63.0}, {"id": "127531135166", "title": "Sony PlayStation 4 (PS4) 500GB Jet Black Console +", "mp": 464.23, "act_sp": 242.5, "act_sp_r": 0.522, "act_pi": 11.6, "act_dur": 24, "act_bids": 12, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 139.27, "rec_sp_r": 0.3, "rec_pi": 4.64, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 450.3, "avg_bids": 65.2}, {"id": "127523814322", "title": "Lenovo ThinkPad x390 i5-8265u 1.6GHz 8GB RAM 256GB", "mp": 401.86, "act_sp": 355.91, "act_sp_r": 0.886, "act_pi": 20.72, "act_dur": 24, "act_bids": 1, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 120.56, "rec_sp_r": 0.3, "rec_pi": 4.02, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 399.85, "avg_bids": 69.4}, {"id": "127444271528", "title": "Lenovo ThinkPad x390 i5-8265u 1.6GHz 8GB RAM 256GB", "mp": 489.34, "act_sp": 208.72, "act_sp_r": 0.427, "act_pi": 6.68, "act_dur": 144, "act_bids": 8, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 146.8, "rec_sp_r": 0.3, "rec_pi": 4.89, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 455.09, "avg_bids": 63.8}, {"id": "127567929076", "title": "Huawei P40 Pro 256GB Silver Dual SIM Network Unloc", "mp": 306.61, "act_sp": 175.06, "act_sp_r": 0.571, "act_pi": 22.75, "act_dur": 96, "act_bids": 9, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 91.98, "rec_sp_r": 0.3, "rec_pi": 3.07, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 271.35, "avg_bids": 58.4}, {"id": "127507000124", "title": "Samsung Galaxy A21s 32GB Blue Dual SIM Unlocked Sm", "mp": 326.11, "act_sp": 159.55, "act_sp_r": 0.489, "act_pi": 18.91, "act_dur": 48, "act_bids": 5, "ft": "custom", "virt": false, "cond": "Excellent", "rec_sp": 97.83, "rec_sp_r": 0.3, "rec_pi": 3.26, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 319.59, "avg_bids": 68.7}, {"id": "127467684433", "title": "Samsung Galaxy A32 5G 64GB Blue Dual SIM Unlocked ", "mp": 416.88, "act_sp": 150.43, "act_sp_r": 0.361, "act_pi": 14.34, "act_dur": 72, "act_bids": 20, "ft": "custom", "virt": false, "cond": "Very Good", "rec_sp": 125.06, "rec_sp_r": 0.3, "rec_pi": 4.17, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 391.87, "avg_bids": 63.1}, {"id": "127512649672", "title": "Canon EOS 450D 12.2MP Digital SLR Camera - Black K", "mp": 334.47, "act_sp": 257.67, "act_sp_r": 0.77, "act_pi": 4.99, "act_dur": 96, "act_bids": 8, "ft": "custom", "virt": false, "cond": "Unknown", "rec_sp": 100.34, "rec_sp_r": 0.3, "rec_pi": 3.34, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 311.06, "avg_bids": 62.8}, {"id": "127526258873", "title": "Motorola Moto G30 128GB Dark Pearl Dual SIM Unlock", "mp": 416.18, "act_sp": 170.88, "act_sp_r": 0.411, "act_pi": 22.37, "act_dur": 72, "act_bids": 7, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 124.85, "rec_sp_r": 0.3, "rec_pi": 4.16, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 418.26, "avg_bids": 71.2}, {"id": "127468229316", "title": "Dell Latitude 3190 Chromebook Celeron 1.10GHz 4GB ", "mp": 691.14, "act_sp": 249.81, "act_sp_r": 0.361, "act_pi": 24.67, "act_dur": 96, "act_bids": 16, "ft": "GMV", "virt": false, "cond": "Unknown", "rec_sp": 207.34, "rec_sp_r": 0.3, "rec_pi": 34.56, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 725.7, "avg_bids": 15.2}, {"id": "127535886269", "title": "Samsung Galaxy A14 64GB Black Dual SIM Network Unl", "mp": 285.64, "act_sp": 133.26, "act_sp_r": 0.467, "act_pi": 15.72, "act_dur": 144, "act_bids": 10, "ft": "custom", "virt": false, "cond": "Good", "rec_sp": 85.69, "rec_sp_r": 0.3, "rec_pi": 2.86, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 289.92, "avg_bids": 71.3}, {"id": "127468255138", "title": "Acer TravelMate B118 Celeron N4020 1.10GHz 4GB RAM", "mp": 879.17, "act_sp": 390.1, "act_sp_r": 0.444, "act_pi": 24.69, "act_dur": 72, "act_bids": 5, "ft": "GMV", "virt": false, "cond": "Unknown", "rec_sp": 263.75, "rec_sp_r": 0.3, "rec_pi": 43.96, "rec_dur": 30, "sim_str": 1.0, "sim_p50": 923.13, "avg_bids": 15.1}, {"id": "127562285899", "title": "Motorola Moto G9 Play 64GB Sapphire Blue Dual SIM ", "mp": 241.67, "act_sp": 199.83, "act_sp_r": 0.827, "act_pi": 2.35, "act_dur": 96, "act_bids": 3, "ft": "custom", "virt": false, "cond": "Excellent", "rec_sp": 72.5, "rec_sp_r": 0.3, "rec_pi": 2.42, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 183.67, "avg_bids": 44.4}, {"id": "127541960036", "title": "Motorola Moto G9 Play 64GB Sapphire Blue Dual SIM ", "mp": 444.87, "act_sp": 183.21, "act_sp_r": 0.412, "act_pi": 21.39, "act_dur": 120, "act_bids": 7, "ft": "custom", "virt": false, "cond": "Very Good", "rec_sp": 133.46, "rec_sp_r": 0.3, "rec_pi": 4.45, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 431.52, "avg_bids": 68.4}, {"id": "V001", "title": "Apple iPhone 15 Pro Max 256GB Unlocked - Excellent", "mp": 1185.0, "act_sp": 850.0, "act_sp_r": 0.717, "act_pi": 25.0, "act_dur": 96, "act_bids": 28, "ft": "GMV", "virt": true, "cond": "Excellent", "rec_sp": 355.5, "rec_sp_r": 0.3, "rec_pi": 59.25, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 1244.25, "avg_bids": 15.2}, {"id": "V002", "title": "Apple iPhone 14 128GB Unlocked - Very Good", "mp": 585.0, "act_sp": 420.0, "act_sp_r": 0.718, "act_pi": 15.0, "act_dur": 72, "act_bids": 19, "ft": "GMV", "virt": true, "cond": "Very Good", "rec_sp": 468.0, "rec_sp_r": 0.8, "rec_pi": 29.25, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 614.25, "avg_bids": 4.7}, {"id": "V003", "title": "iPad Pro 12.9\" M2 256GB WiFi - Good", "mp": 790.0, "act_sp": 550.0, "act_sp_r": 0.696, "act_pi": 20.0, "act_dur": 96, "act_bids": 22, "ft": "GMV", "virt": true, "cond": "Good", "rec_sp": 632.0, "rec_sp_r": 0.8, "rec_pi": 39.5, "rec_dur": 30, "sim_str": 1.0, "sim_p50": 829.5, "avg_bids": 5.3}, {"id": "V004", "title": "Samsung Galaxy Tab S9 Ultra 256GB WiFi - Very Good", "mp": 685.0, "act_sp": 480.0, "act_sp_r": 0.701, "act_pi": 18.0, "act_dur": 72, "act_bids": 17, "ft": "GMV", "virt": true, "cond": "Very Good", "rec_sp": 411.0, "rec_sp_r": 0.6, "rec_pi": 34.25, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 719.25, "avg_bids": 9.1}, {"id": "V005", "title": "Apple Watch Ultra 2 49mm GPS+Cell - Excellent", "mp": 645.0, "act_sp": 450.0, "act_sp_r": 0.698, "act_pi": 15.0, "act_dur": 72, "act_bids": 24, "ft": "GMV", "virt": true, "cond": "Excellent", "rec_sp": 322.5, "rec_sp_r": 0.5, "rec_pi": 32.25, "rec_dur": 30, "sim_str": 1.0, "sim_p50": 677.25, "avg_bids": 11.0}, {"id": "V006", "title": "MacBook Pro M3 Pro 14\" 18GB 512GB Space Black", "mp": 1870.0, "act_sp": 1400.0, "act_sp_r": 0.749, "act_pi": 35.0, "act_dur": 120, "act_bids": 33, "ft": "GMV", "virt": true, "cond": "Excellent", "rec_sp": 1122.0, "rec_sp_r": 0.6, "rec_pi": 93.5, "rec_dur": 60, "sim_str": 1.0, "sim_p50": 1963.5, "avg_bids": 9.5}, {"id": "V007", "title": "Anker 26800mAh Portable Charger PD - New", "mp": 38.0, "act_sp": 22.0, "act_sp_r": 0.579, "act_pi": 1.0, "act_dur": 48, "act_bids": 16, "ft": "traffic", "virt": true, "cond": "New", "rec_sp": 11.4, "rec_sp_r": 0.3, "rec_pi": 1.0, "rec_dur": 90, "sim_str": 1.0, "sim_p50": 36.4, "avg_bids": 24.8}, {"id": "V008", "title": "USB-C 140W Fast Charging Cable 2m 3-pack", "mp": 16.5, "act_sp": 9.0, "act_sp_r": 0.545, "act_pi": 0.5, "act_dur": 24, "act_bids": 14, "ft": "traffic", "virt": true, "cond": "New", "rec_sp": 4.95, "rec_sp_r": 0.3, "rec_pi": 1.0, "rec_dur": 30, "sim_str": 1.0, "sim_p50": 14.95, "avg_bids": 10.6}];
+const SUMMARY  = {"gmv": 41397.29, "products": 70, "avg_bids": 15.5, "avg_str": 1.0, "dist": {"custom": 35, "GMV": 32, "traffic": 3}, "watch_mean": 115.1, "bidders_mean": 6.3};
+
+// ── Constants ─────────────────────────────────────────────────────────────────
+const SL  = {GMV:'maximize GMV', traffic:'fast sell', custom:'custom'};
+const CLR = ['#378ADD','#1D9E75','#D85A30','#BA7517'];
+const GRID_OPT = {color:'rgba(0,0,0,0.05)'};
+const CHART_BASE = {responsive:true, maintainAspectRatio:false,
+  plugins:{legend:{labels:{color:'#888', font:{size:10}, boxWidth:10, padding:14}}}};
+
+let filterVal='all', miniChart=null;
+
+// ── Utils ─────────────────────────────────────────────────────────────────────
+const usd = (n,d=0) => n==null?'—':'$'+n.toLocaleString('en-US',{maximumFractionDigits:d});
+const pct = n => n==null?'—':(n*100).toFixed(0)+'%';
+const num = (n,d=1) => n==null?'—':n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  renderKPI(); updateCounts(); renderTable();
+  renderFunnel();
+});
+
+// ── KPI ───────────────────────────────────────────────────────────────────────
+function renderKPI() {
+  const d = SUMMARY;
+  document.getElementById('pb').textContent = d.products + ' products';
+  document.getElementById('kpi').innerHTML = `
+    <div class="kcard"><div class="kl">Actual total GMV</div>
+      <div class="kv">${usd(d.gmv)}</div><div class="ks ku">Real eBay sold prices</div></div>
+    <div class="kcard"><div class="kl">Avg sim sell-through</div>
+      <div class="kv">${pct(d.avg_str)}</div><div class="ks">Baseline: ~58%</div></div>
+    <div class="kcard"><div class="kl">Avg bid count / item</div>
+      <div class="kv">${num(d.avg_bids)}</div><div class="ks ku">Total bids per auction</div></div>
+    <div class="kcard"><div class="kl">Strategy mix</div>
+      <div class="kv smix">
+        <span style="color:#378ADD">GMV ${d.dist.GMV||0}</span>
+        <span style="color:#1D9E75">Fast ${d.dist.traffic||0}</span>
+        <span style="color:#BA7517">Custom ${d.dist.custom||0}</span>
+      </div><div class="ks">across ${d.products} products</div></div>`;
+}
+
+// ── Table ─────────────────────────────────────────────────────────────────────
+function updateCounts() {
+  const c = {all:PRODUCTS.length};
+  PRODUCTS.forEach(p => { c[p.ft] = (c[p.ft]||0)+1; });
+  document.querySelectorAll('.tab').forEach(b => {
+    const f = b.dataset.f;
+    const l = {all:'All',GMV:'GMV',traffic:'Fast sell',custom:'Custom'}[f];
+    b.textContent = l + ' (' + (c[f]||0) + ')';
+  });
+}
+
+function ft(type, btn) {
+  filterVal = type;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderTable();
+}
+
+function badge(f) {
+  const cls = f==='GMV'?'sg':f==='traffic'?'sf':'sc';
+  return `<span class="sb ${cls}">${SL[f]||f}</span>`;
+}
+
+function renderTable() {
+  const list = filterVal==='all' ? PRODUCTS : PRODUCTS.filter(p => p.ft===filterVal);
+  const tb = document.getElementById('tbody');
+  if (!list.length) { tb.innerHTML='<tr><td colspan="9" class="lcell">No products.</td></tr>'; return; }
+  tb.innerHTML = list.map(p => {
+    const sc = p.sim_str!=null ? (p.sim_str>=.8?'color:var(--ok-t)':p.sim_str<.65?'color:var(--danger)':'') : '';
+    const rs = p.rec_sp!=null ? `${usd(p.rec_sp)}<span class="ratio">(${pct(p.rec_sp_r)})</span>` : '<span class="dim">—</span>';
+    const ri = p.rec_pi!=null ? usd(p.rec_pi, p.rec_pi<10?1:0) : '<span class="dim">—</span>';
+    const rd = p.rec_dur!=null ? p.rec_dur+'r' : '<span class="dim">—</span>';
+    const ss = p.sim_str!=null ? `<span style="${sc};font-weight:600">${pct(p.sim_str)}</span>` : '<span class="dim">—</span>';
+    return `<tr>
+      <td><div class="pid">${p.id}${p.virt?'<span class="vpill">virtual</span>':''}</div>
+          <div class="ptitle" title="${p.title}">${p.title}</div></td>
+      <td class="nr">${usd(p.mp)}</td>
+      <td class="nr">${usd(p.act_sp)}<span class="ratio">(${pct(p.act_sp_r)})</span></td>
+      <td class="nr">${rs}</td>
+      <td class="nr">${usd(p.act_pi, p.act_pi<10?1:0)}</td>
+      <td class="nr">${ri}</td>
+      <td class="nr">${rd}</td>
+      <td class="nr">${ss}</td>
+      <td>${badge(p.ft)}</td></tr>`;
+  }).join('');
+}
+
+// ── Funnel ────────────────────────────────────────────────────────────────────
+function renderFunnel() {
+  const w = SUMMARY.watch_mean, b = SUMMARY.bidders_mean;
+  const s = [
+    {l:'Viewers',       v:w,       c:'#378ADD'},
+    {l:'Interested',    v:w*.25,   c:'#1D9E75'},
+    {l:'Active Bidders',v:b,       c:'#D85A30'},
+    {l:'Winners (sold)',v:b*.72,   c:'#BA7517'},
+  ];
+  document.getElementById('funnel').innerHTML = s.map(x => `
+    <div class="frow">
+      <div class="flabel">${x.l}</div>
+      <div class="fwrap"><div class="fbar" style="width:${(x.v/w*100).toFixed(1)}%;background:${x.c}">${x.v.toFixed(1)}</div></div>
+      <div class="fpct">${(x.v/w*100).toFixed(0)}%</div>
+    </div>`).join('');
+}
+
+// ── Charts ────────────────────────────────────────────────────────────────────
+// Charts removed — replaced by AI script section
+
+// ── Collectibles Simulator ───────────────────────────────────────────────────
+const CSIM_SCHEMAS = {
+  cards:{name:'Trading Cards',icon:'🃏',
+    base:{bidders:7.5,sigma:2.5,vol:0.55,inc:12,late:0.62,str:0.82},
+    fields:[
+      {id:'year',label:'Card Year',type:'number',ph:'e.g. 2020',hint:'Year on card'},
+      {id:'sport',label:'Sport / Game',type:'select',opts:['Pokémon / TCG','Basketball','Baseball','Football','Soccer','Other']},
+      {id:'rarity',label:'Rarity',type:'select',opts:['Base (Common)','Holo / Foil','Parallel / Refractor','Serial Numbered (/99 or less)','1-of-1 (One of One)'],
+        mult:{'Base (Common)':1.0,'Holo / Foil':1.28,'Parallel / Refractor':1.75,'Serial Numbered (/99 or less)':2.3,'1-of-1 (One of One)':5.2}},
+      {id:'grade',label:'Condition / Grade',type:'select',opts:['Raw (Ungraded)','PSA 10 (Gem Mint)','PSA 9 (Mint)','PSA 8 or below','BGS 10 (Black Label)','BGS 9.5 (Gem Mint)','BGS 9 or below','SGC 10','CGC Perfect'],
+        mult:{'Raw (Ungraded)':1.0,'PSA 10 (Gem Mint)':2.6,'PSA 9 (Mint)':1.45,'PSA 8 or below':0.85,'BGS 10 (Black Label)':3.6,'BGS 9.5 (Gem Mint)':2.1,'BGS 9 or below':1.15,'SGC 10':2.3,'CGC Perfect':2.9},
+        vadj:{'Raw (Ungraded)':0.15,'PSA 10 (Gem Mint)':-0.15,'BGS 10 (Black Label)':-0.2}},
+      {id:'set',label:'Set / Series',type:'text',ph:'e.g. Panini Prizm, Base Set',hint:'Brand or product line'},
+    ],
+    tags:[
+      {id:'auto',label:'Autograph (Auto)',add:0.55},{id:'patch',label:'Patch / Relic',add:0.35},
+      {id:'rookie',label:'Rookie Card (RC)',add:0.45},{id:'1of1',label:'True 1/1',add:4.0},
+      {id:'vintage',label:'Vintage (pre-1990)',add:0.3},{id:'error',label:'Error / Misprint',add:0.8},
+    ],
+    insights:['Graded cards reduce price uncertainty — buyers bid with more confidence on PSA/BGS slabs.','Very low starting prices ($1) on scarce cards trigger bidding wars among collectors.','1-of-1s and autos have the widest swings — one right collector can pay 10×.']},
+  coins:{name:'Coins & Currency',icon:'🪙',
+    base:{bidders:5.8,sigma:2.0,vol:0.38,inc:18,late:0.44,str:0.79},
+    fields:[
+      {id:'ctype',label:'Item Type',type:'select',opts:['Coin — US','Coin — World','Silver Bullion Round','Gold Coin / Bar','Paper Money / Banknote','Error / Variety']},
+      {id:'year',label:'Year / Era',type:'number',ph:'e.g. 1921',hint:'Year struck or issued'},
+      {id:'metal',label:'Composition',type:'select',opts:['Gold (.999+)','Silver (.999+)','Mixed / Clad','Copper','Nickel','Other'],
+        mult:{'Gold (.999+)':1.8,'Silver (.999+)':1.25,'Mixed / Clad':1.0,'Copper':1.05,'Nickel':1.0,'Other':1.0}},
+      {id:'grade',label:'Grade / Condition',type:'select',opts:['Raw / Uncertified','MS 65+ (Gem)','MS 63–64','MS 60–62','AU 50–58','Fine / VF','Good or below','PF 70 (Proof Gem)','PF 69'],
+        mult:{'Raw / Uncertified':1.0,'MS 65+ (Gem)':2.2,'MS 63–64':1.55,'MS 60–62':1.25,'AU 50–58':1.1,'Fine / VF':0.95,'Good or below':0.8,'PF 70 (Proof Gem)':3.0,'PF 69':2.1},
+        vadj:{'Raw / Uncertified':0.12,'MS 65+ (Gem)':-0.12,'PF 70 (Proof Gem)':-0.15}},
+      {id:'cert',label:'Certification',type:'select',opts:['Raw (No Slab)','PCGS','NGC','ANACS','ICG'],
+        mult:{'Raw (No Slab)':1.0,'PCGS':1.18,'NGC':1.15,'ANACS':1.05,'ICG':1.03}},
+    ],
+    tags:[
+      {id:'error',label:'Error / Variety',add:1.5},{id:'cc',label:'Carson City (CC) Mint',add:0.4},
+      {id:'key',label:'Key Date',add:0.8},{id:'rainbow',label:'Rainbow Toned',add:0.35},
+      {id:'proof',label:'Proof Strike',add:0.3},
+    ],
+    insights:['PCGS/NGC slabs command premiums — no dispute over grade.','Key dates and error coins have the widest bid variance.','Gold/silver bullion tracks spot price; premiums depend on design popularity.']},
+  toys:{name:'Toys & Hobbies',icon:'🧸',
+    base:{bidders:7.2,sigma:2.3,vol:0.40,inc:5,late:0.55,str:0.84},
+    fields:[
+      {id:'brand',label:'Brand',type:'select',opts:['Funko Pop!','LEGO','Hot Wheels / Matchbox','Hasbro / Kenner','Mattel','Bandai / Tamashii','NECA','McFarlane','Sideshow','Other']},
+      {id:'char',label:'Character / Model',type:'text',ph:'e.g. Darth Vader, 1969 Camaro',hint:'Specific figure or vehicle'},
+      {id:'pkg',label:'Packaging Condition',type:'select',opts:['Mint in Box (MIB/MISB)','Near Mint Box','Box opened — complete','No box — loose complete','No box — missing parts'],
+        mult:{'Mint in Box (MIB/MISB)':1.5,'Near Mint Box':1.2,'Box opened — complete':1.0,'No box — loose complete':0.7,'No box — missing parts':0.45},
+        vadj:{'Mint in Box (MIB/MISB)':-0.1,'No box — missing parts':0.2}},
+      {id:'line',label:'Franchise',type:'select',opts:['Star Wars','Marvel / MCU','DC','Disney','Pokémon / Anime','G.I. Joe','Transformers','Horror / Cult','Sports','Other']},
+      {id:'year',label:'Release Year',type:'number',ph:'e.g. 1984',hint:'Year of manufacture'},
+    ],
+    tags:[
+      {id:'chase',label:'Chase / Variant',add:1.2},{id:'conv',label:'Convention Exclusive',add:0.9},
+      {id:'retail_ex',label:'Retailer Exclusive',add:0.5},{id:'prototype',label:'Prototype / Pre-Production',add:3.0},
+      {id:'signed',label:'Signed by Actor',add:0.7},{id:'vintage',label:'Vintage (pre-1990)',add:0.6},
+    ],
+    insights:['Chase variants and SDCC/NYCC exclusives move fastest.','Mint-in-box commands 50%+ over loose versions.','Funko Pop live auctions create bidding frenzies on chase figures.']},
+  comics:{name:'Comics & Art',icon:'📚',
+    base:{bidders:5.2,sigma:2.0,vol:0.60,inc:10,late:0.50,str:0.76},
+    fields:[
+      {id:'pub',label:'Publisher',type:'select',opts:['Marvel','DC','Image','Dark Horse','IDW','BOOM! Studios','Manga / Japanese','Independent','Original Art','Other']},
+      {id:'issue',label:'Issue # / Volume',type:'text',ph:'e.g. #1 Vol.2, Amazing Fantasy #15',hint:'Specific issue reference'},
+      {id:'age',label:'Comic Age / Era',type:'select',opts:['Golden Age (1938–1956)','Silver Age (1956–1970)','Bronze Age (1970–1985)','Copper Age (1985–1991)','Modern (1991–2010)','Current (2010–present)','Original Art / Prints'],
+        mult:{'Golden Age (1938–1956)':3.0,'Silver Age (1956–1970)':2.2,'Bronze Age (1970–1985)':1.6,'Copper Age (1985–1991)':1.15,'Modern (1991–2010)':1.0,'Current (2010–present)':0.95,'Original Art / Prints':2.5},
+        vadj:{'Golden Age (1938–1956)':0.3,'Original Art / Prints':0.4}},
+      {id:'cgrade',label:'Condition / Grade',type:'select',opts:['Raw — Near Mint (NM)','Raw — Very Fine (VF)','Raw — Fine or below','CGC 9.8','CGC 9.6','CGC 9.4 or below','CBCS 9.8'],
+        mult:{'Raw — Near Mint (NM)':1.0,'Raw — Very Fine (VF)':0.8,'Raw — Fine or below':0.55,'CGC 9.8':2.4,'CGC 9.6':1.7,'CGC 9.4 or below':1.2,'CBCS 9.8':2.1},
+        vadj:{'Raw — Near Mint (NM)':0.15,'CGC 9.8':-0.12}},
+      {id:'cover',label:'Cover Edition',type:'select',opts:['Standard Cover','Variant Cover (A/B/C)','Retailer Incentive Variant','1-in-25 or rarer variant'],
+        mult:{'Standard Cover':1.0,'Variant Cover (A/B/C)':1.2,'Retailer Incentive Variant':1.5,'1-in-25 or rarer variant':2.2}},
+    ],
+    tags:[
+      {id:'key',label:'Key Issue (1st appearance)',add:1.8},{id:'movie',label:'Movie / TV Tie-In',add:0.6},
+      {id:'signed',label:'Signed by Creator',add:0.7},{id:'whi',label:'White Pages',add:0.25},
+      {id:'first',label:"Run's #1 Issue",add:0.5},{id:'newsstand',label:'Newsstand Edition',add:0.35},
+    ],
+    insights:['Key issues (first appearances) are most volatile — MCU announcements can 10× a book overnight.','CGC 9.8 resolves grade disputes and attracts more confident bidders.','Golden/Silver Age with white pages trade at significant premiums.']},
+  sports:{name:'Sports Memorabilia',icon:'🏆',
+    base:{bidders:6.0,sigma:2.2,vol:0.65,inc:20,late:0.52,str:0.74},
+    fields:[
+      {id:'sport',label:'Sport',type:'select',opts:['Basketball (NBA)','American Football (NFL)','Baseball (MLB)','Soccer / Football','Ice Hockey (NHL)','Golf','Boxing / MMA','Auto Racing','Other']},
+      {id:'player',label:'Athlete / Team',type:'text',ph:'e.g. LeBron James, Yankees',hint:'Primary subject'},
+      {id:'itype',label:'Item Type',type:'select',opts:['Signed Photograph','Signed Jersey','Signed Ball','Signed Helmet','Game-Used Equipment','Championship Replica','Programme / Ticket','Bobblehead'],
+        mult:{'Signed Photograph':1.0,'Signed Jersey':1.6,'Signed Ball':1.3,'Signed Helmet':1.5,'Game-Used Equipment':1.4,'Championship Replica':1.1,'Programme / Ticket':0.7,'Bobblehead':0.8}},
+      {id:'auth',label:'Authentication',type:'select',opts:['No COA (unauthenticated)','JSA Full Letter','JSA Sticker Only','Beckett (BAS)','PSA/DNA','Steiner Sports','Team / League COA'],
+        mult:{'No COA (unauthenticated)':0.55,'JSA Full Letter':1.25,'JSA Sticker Only':1.0,'Beckett (BAS)':1.3,'PSA/DNA':1.35,'Steiner Sports':1.1,'Team / League COA':1.15},
+        vadj:{'No COA (unauthenticated)':0.25,'PSA/DNA':-0.1}},
+      {id:'era',label:'Era / Career Phase',type:'select',opts:['Active — Current Star','Active — Rising Prospect','Retired — Hall of Famer','Retired — Notable','Deceased','Rookie Year'],
+        mult:{'Active — Current Star':1.0,'Active — Rising Prospect':0.85,'Retired — Hall of Famer':1.3,'Retired — Notable':0.9,'Deceased':1.8,'Rookie Year':1.45}},
+    ],
+    tags:[
+      {id:'game_worn',label:'Game-Worn / Used',add:0.7},{id:'champion',label:'Championship Season',add:0.5},
+      {id:'rookie_yr',label:'Rookie Year Sig',add:0.6},{id:'multi_sig',label:'Multi-Sig / Team-Signed',add:0.8},
+      {id:'framed',label:'Professionally Framed',add:0.15},{id:'mvp',label:'MVP / Award Year',add:0.35},
+    ],
+    insights:['Authentication is the #1 value driver — unauthenticated signatures lose 40–50% of potential.','Deceased HOF players and championship-linked items have sustained demand.','Game-used with photo match or team LOA trades well above generic game-used.']},
+  crystals:{name:'Crystals & Gems',icon:'💎',
+    base:{bidders:5.5,sigma:2.0,vol:0.42,inc:8,late:0.47,str:0.81},
+    fields:[
+      {id:'mineral',label:'Mineral / Gem Type',type:'select',opts:['Amethyst','Clear Quartz','Rose Quartz','Fluorite','Labradorite','Pyrite','Selenite','Moldavite','Opal','Ruby / Sapphire / Emerald','Citrine','Malachite','Obsidian','Other']},
+      {id:'origin',label:'Origin',type:'select',opts:['Brazil','Madagascar','Morocco','Mexico','China — Inner Mongolia','USA (domestic)','Afghanistan','Pakistan','Colombia','Other / Unknown'],
+        mult:{'Brazil':1.0,'Madagascar':1.05,'Morocco':0.95,'Mexico':0.9,'China — Inner Mongolia':0.85,'USA (domestic)':1.1,'Afghanistan':1.15,'Pakistan':1.2,'Colombia':1.3,'Other / Unknown':0.9}},
+      {id:'form',label:'Form / Shape',type:'select',opts:['Raw / Natural Rough','Cluster / Druzy','Sphere / Ball','Tower / Point','Palm Stone','Tumbled (Polished)','Carved Figure','Geode (Full)','Specimen on Matrix'],
+        mult:{'Raw / Natural Rough':0.9,'Cluster / Druzy':1.1,'Sphere / Ball':1.25,'Tower / Point':1.1,'Palm Stone':1.0,'Tumbled (Polished)':0.85,'Carved Figure':1.3,'Geode (Full)':1.15,'Specimen on Matrix':1.2}},
+      {id:'weight',label:'Approximate Weight',type:'select',opts:['Under 50g','50–200g','200g–1kg','1kg–5kg','Over 5kg'],
+        mult:{'Under 50g':0.8,'50–200g':1.0,'200g–1kg':1.2,'1kg–5kg':1.5,'Over 5kg':2.0}},
+      {id:'quality',label:'Visual Quality',type:'select',opts:['Museum-Grade (exceptional)','High Grade (above avg)','Standard Collector Grade','Commercial Grade'],
+        mult:{'Museum-Grade (exceptional)':2.2,'High Grade (above avg)':1.4,'Standard Collector Grade':1.0,'Commercial Grade':0.7},
+        vadj:{'Museum-Grade (exceptional)':0.2}},
+    ],
+    tags:[
+      {id:'moldavite',label:'Moldavite (tektite)',add:2.5},{id:'iridescent',label:'Strong Iridescence',add:0.6},
+      {id:'inclusion',label:'Notable Inclusions',add:0.4},{id:'fluorescent',label:'UV Fluorescent',add:0.3},
+      {id:'rare_locality',label:'Rare / Closed Locality',add:0.7},{id:'certified',label:'GIA / Lab Certified',add:0.9},
+    ],
+    insights:['Moldavite and closed-locality specimens command premiums above standard market.','Photography matters enormously — iridescence must be captured to convert live viewers.','Spheres and carved forms appeal to a broader retail audience than raw specimens.']},
+};
+const CSIM_GOALS = {
+  quick:{label:'Quick Cash',lo:0.18,hi:0.30},
+  profit:{label:'Max Profit',lo:0.55,hi:0.75},
+  balanced:{label:'Safe Bet',lo:0.32,hi:0.52},
+};
+let csimCat='cards', csimTags=new Set(), csimGoal='quick';
+
+function csimSelectCat(k,el){
+  csimCat=k; csimTags=new Set();
+  document.querySelectorAll('.cat-card-sim').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  csimRenderForm();
+}
+function csimSelGoal(btn){
+  document.querySelectorAll('.goal-btn-sim').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  csimGoal=btn.dataset.g;
+}
+function csimRenderForm(){
+  const s=CSIM_SCHEMAS[csimCat];
+  document.getElementById('csim-attr-fields').innerHTML=s.fields.map(f=>{
+    const inp=f.type==='select'
+      ?`<select id="cf_${f.id}">${f.opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select>`
+      :`<input type="${f.type}" id="cf_${f.id}" placeholder="${f.ph||''}"/>`;
+    return `<div class="sf"><label>${f.label}</label>${inp}${f.hint?`<div class="hint">${f.hint}</div>`:''}</div>`;
+  }).join('');
+  document.getElementById('csim-tags-section').innerHTML=`
+    <div class="attr-sep" style="margin:14px 0 12px"></div>
+    <div class="tags-lbl">Optional Features <span style="font-size:9px;color:var(--t4);font-weight:400;text-transform:none">(select all that apply)</span></div>
+    <div class="tag-pool-sim">
+      ${s.tags.map(t=>`<div class="tag-chip-sim" data-tag="${t.id}" data-add="${t.add}" onclick="csimToggleTag(this)">${t.label}</div>`).join('')}
+    </div>`;
+}
+function csimToggleTag(el){
+  const t=el.dataset.tag;
+  if(csimTags.has(t)){csimTags.delete(t);el.classList.remove('on');}
+  else{csimTags.add(t);el.classList.add('on');}
+}
+function csimComputeMult(){
+  const s=CSIM_SCHEMAS[csimCat];
+  let m=1.0,va=0;const chips=[];
+  s.fields.forEach(f=>{
+    if(!f.mult)return;
+    const el=document.getElementById('cf_'+f.id);
+    if(!el)return;
+    const v=el.value,fm=f.mult[v];
+    if(fm&&fm!==1.0){m*=fm;chips.push({label:v.split('(')[0].trim(),mult:fm,type:fm>1?'pos':'neg'});}
+    if(f.vadj&&f.vadj[v])va+=f.vadj[v];
+  });
+  s.tags.forEach(t=>{
+    if(!csimTags.has(t.id))return;
+    const a=parseFloat(t.add);m*=(1+a);
+    chips.push({label:t.label,mult:1+a,type:a>0?'pos':'neg'});
+  });
+  return{m,va,chips};
+}
+function csimGauss(mu,sig){
+  let u=0,v=0;
+  while(!u)u=Math.random();while(!v)v=Math.random();
+  return mu+sig*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+}
+function csimOneAuction(adjVal,sp,viewers,vol){
+  const bp=CSIM_SCHEMAS[csimCat].base;
+  const vs=Math.max(0.4,Math.min(2.2,0.5+Math.log(viewers/80+1)/Math.log(2)));
+  const sr=sp/adjVal;
+  const se=sr<0.25?1.5:sr<0.45?1.2:sr<0.65?0.95:0.65;
+  const N=Math.max(0,Math.round(csimGauss(bp.bidders*vs*se,bp.sigma)));
+  if(N===0)return{sold:false,fp:0,bc:0,nb:0};
+  const lnS=vol*0.48;
+  const vals=Array.from({length:N},()=>adjVal*Math.exp(csimGauss(0,lnS))).sort((a,b)=>b-a);
+  if(vals[0]<sp)return{sold:false,fp:sp,bc:0,nb:N};
+  let fp;
+  if(N===1||vals[1]<sp){fp=sp;}
+  else{const inc=Math.max(0.5,csimGauss(bp.inc,bp.inc*0.45));fp=Math.min(vals[0],vals[1]+inc);}
+  return{sold:true,fp,bc:Math.max(1,Math.round(csimGauss(N*2.1,N*0.8))),nb:N};
+}
+function csimMC(adjVal,sp,viewers,vol,n=300){
+  const res=Array.from({length:n},()=>csimOneAuction(adjVal,sp,viewers,vol));
+  const sold=res.filter(r=>r.sold);
+  const prices=sold.map(r=>r.fp).sort((a,b)=>a-b);
+  const str=sold.length/n;
+  const pq=q=>prices[Math.floor(prices.length*q)]??0;
+  const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
+  return{str,p10:pq(.1),p25:pq(.25),p50:pq(.5),p75:pq(.75),p90:pq(.9),
+    meanPrice:avg(prices),avgBidders:avg(res.map(r=>r.nb)),avgBids:avg(sold.map(r=>r.bc))};
+}
+function csimSens(adjVal,viewers,vol){
+  return[.15,.30,.50,.70,.90].map(r=>{
+    const sp=adjVal*r;
+    const res=csimMC(adjVal,sp,viewers,vol,80);
+    return{ratio:r,sp,...res};
+  });
+}
+async function runSim(){
+  const value=parseFloat(document.getElementById('csim-value').value);
+  const viewers=parseInt(document.getElementById('csim-viewers').value)||80;
+  if(!value||value<=0){alert('Please enter your item\'s estimated market value.');return;}
+  const btn=document.getElementById('csim-run-btn');
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>Simulating…';
+  document.getElementById('csim-output').innerHTML=`<div class="sim-placeholder"><span class="spin"></span>&nbsp;Running 300 simulations…</div>`;
+  await new Promise(r=>setTimeout(r,40));
+  try{
+    const{m,va,chips}=csimComputeMult();
+    const bp=CSIM_SCHEMAS[csimCat].base;
+    const adjVal=value*m;
+    const vol=Math.max(0.15,Math.min(1.4,bp.vol+va));
+    const gc=CSIM_GOALS[csimGoal];
+    const lo=adjVal*gc.lo,hi=adjVal*gc.hi,mid=(lo+hi)/2;
+    const main=csimMC(adjVal,mid,viewers,vol,300);
+    const sens=csimSens(adjVal,viewers,vol);
+    csimRenderOut(value,adjVal,lo,hi,mid,vol,main,sens,chips,m);
+    // Feed context to AI script generator
+    aiUpdateCtx({
+      cat:csimCat, catIcon:CSIM_SCHEMAS[csimCat].icon,
+      goal:csimGoal, value:value.toFixed(0),
+      p10:'$'+main.p10.toFixed(0), p50:main.p50.toFixed(0), p90:'$'+main.p90.toFixed(0),
+      recLo:lo.toFixed(0), recHi:hi.toFixed(0),
+      sellRate:(main.str*100).toFixed(0)+'%',
+      bidders:main.avgBidders.toFixed(1),
+      chips:chips
+    });
+  }catch(e){document.getElementById('csim-output').innerHTML=`<div class="sim-placeholder" style="color:#D85A30">Error: ${e.message}</div>`;}
+  btn.disabled=false;btn.textContent='Run Simulation →';
+}
+function csimRenderOut(base,adj,lo,hi,mid,vol,main,sens,chips,mult){
+  const s=CSIM_SCHEMAS[csimCat];
+  const $f=(v,d=0)=>'$'+v.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  const $p=v=>(v*100).toFixed(0)+'%';
+  const risk=main.str>=.8?'low':main.str>=.6?'medium':'high';
+  const riskTxt={
+    low:`<strong>Low Risk.</strong> ${$p(main.str)} of simulated auctions sold at this starting price.`,
+    medium:`<strong>Medium Risk.</strong> ${$p(main.str)} sell rate. Have a relist plan if audience is smaller than expected.`,
+    high:`<strong>High Risk.</strong> Only ${$p(main.str)} of simulations sold. Consider a lower starting price.`,
+  };
+  const lr=s.base.late;
+  const pat=lr>=.6?`<strong>Heavy late-bidding (${$p(lr)}).</strong> Expect most bids in the final stretch — quiet early periods are normal.`
+           :lr>=.5?`<strong>Moderate late-bidding (${$p(lr)}).</strong> Activity builds toward close.`
+           :`<strong>Balanced bidding (${$p(lr)}).</strong> Early interest here is a genuine demand signal.`;
+  const gNarr={
+    quick:`Starting in this range signals "no reserve" to buyers — more will watch and bid, driving prices above where a higher floor would land.`,
+    profit:`This higher floor protects your minimum. Fewer bidders enter, but those who do are serious. Best if you can afford to relist.`,
+    balanced:`A moderate start giving you <strong>${$p(main.str)} sell probability</strong> while keeping the floor close to market value.`,
+  };
+  const multDiff=((mult-1)*100).toFixed(0);
+  const multSign=mult>=1?'+':'';
+  const chipHTML=chips.length?`<div class="mult-row-sim">${chips.map(c=>{const pp=((c.mult-1)*100).toFixed(0);const sg=c.mult>1?'+':'';return`<span class="mchip ${c.type==='pos'?'mchip-pos':c.type==='neg'?'mchip-neg':'mchip-neu'}">${c.label} ${sg}${pp}%</span>`;}).join('')}</div>`:'' ;
+  const adjNote=mult>1.05||mult<0.95
+    ?`<div class="adj-note-sim">Attributes adjust effective value: <strong>${$f(base)}</strong> → <strong>${$f(adj)}</strong> (<span style="color:${mult>1?'var(--ok-t)':'var(--warn-t)'}">${multSign}${multDiff}%</span>). Simulation uses adjusted value.</div>`
+    :`<div class="adj-note-sim">Attributes produce near-standard profile — no significant premium or discount.</div>`;
+  const scl=adj*1.6||1;
+  const p50p=Math.min(96,Math.max(4,(main.p50/scl)*100));
+  const p25p=Math.min(96,Math.max(4,(main.p25/scl)*100));
+  const p75p=Math.min(96,Math.max(4,(main.p75/scl)*100));
+  const sensHTML=sens.map(ss=>{
+    const isR=Math.abs(ss.sp-mid)<adj*.12;
+    const cls=ss.str>=.8?'var(--ok)':ss.str>=.6?'var(--warn)':'#D85A30';
+    const bw=Math.round(ss.str*60);
+    return`<tr class="${isR?'hl-sim':''}">
+      <td>${$f(ss.sp)} <span style="color:var(--t3);font-size:10px">(${$p(ss.ratio)})</span>${isR?'<span class="you-tag-sim">Your Choice</span>':''}</td>
+      <td style="font-weight:600">${$f(ss.p50)}</td>
+      <td><span class="sbar" style="width:${bw}px;background:${cls}"></span>${$p(ss.str)}</td>
+      <td style="color:var(--t2)">${ss.avgBidders.toFixed(1)}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('csim-output').innerHTML=`
+    <div class="ocard-sim">
+      <div class="card-lbl-sim">🔬 Attribute Analysis — ${s.name}</div>
+      ${chipHTML}${adjNote}
+    </div>
+    <div class="ocard-sim">
+      <div class="card-lbl-sim">💡 Recommended Starting Price</div>
+      <div class="rec-hero-sim">
+        <div class="rec-range-sim">${$f(lo)} – ${$f(hi)}</div>
+        <div class="rec-lbl-sim">${s.name} · Goal: ${CSIM_GOALS[csimGoal].label}</div>
+      </div>
+      <div class="rec-why-sim">${gNarr[csimGoal]}</div>
+    </div>
+    <div class="ocard-sim">
+      <div class="card-lbl-sim">📊 Price Forecast — 300 Simulations</div>
+      <div class="fbar-sim">
+        <div class="fbar-track-sim"><div class="fbar-fill-sim" style="left:${p25p}%;width:${p75p-p25p}%"></div></div>
+        <div class="fbar-pin-sim" style="left:${p50p}%"></div>
+      </div>
+      <div class="fbar-ticks-sim">
+        <div class="ftick-sim">Worst case<br/><strong>${$f(main.p10)}</strong></div>
+        <div class="ftick-sim mid">Median<br/><strong style="font-size:15px">${$f(main.p50)}</strong></div>
+        <div class="ftick-sim" style="text-align:right">Best case<br/><strong>${$f(main.p90)}</strong></div>
+      </div>
+      <div class="stats-sim">
+        <div class="stat-sim">
+          <div class="stat-lbl-sim">Sell Probability</div>
+          <div class="stat-val-sim ${main.str>=.8?'c-ok':main.str>=.6?'c-warn':'c-red'}">${$p(main.str)}</div>
+          <div class="stat-note-sim">${risk==='low'?'Low risk':risk==='medium'?'Medium risk':'High risk'}</div>
+        </div>
+        <div class="stat-sim">
+          <div class="stat-lbl-sim">Expected Bidders</div>
+          <div class="stat-val-sim c-info">${main.avgBidders.toFixed(1)}</div>
+          <div class="stat-note-sim">avg per auction</div>
+        </div>
+        <div class="stat-sim">
+          <div class="stat-lbl-sim">Total Bids</div>
+          <div class="stat-val-sim" style="color:var(--t2)">${main.avgBids.toFixed(0)}</div>
+          <div class="stat-note-sim">avg per sold</div>
+        </div>
+      </div>
+      <div class="pattern-sim">ℹ️ &nbsp;${pat}</div>
+      <div class="risk-sim ${risk}"><div class="rdot"></div><div>${riskTxt[risk]}</div></div>
+    </div>
+    <div class="ocard-sim">
+      <div class="card-lbl-sim">🔄 Starting Price Sensitivity</div>
+      <div style="overflow-x:auto"><table class="stbl-sim">
+        <thead><tr><th>Starting Price</th><th>Median Final</th><th>Sell Rate</th><th>Avg Bidders</th></tr></thead>
+        <tbody>${sensHTML}</tbody>
+      </table></div>
+    </div>
+    <div class="ocard-sim">
+      <div class="card-lbl-sim">📈 Starting Price Impact — Revenue &amp; Bidding Heat
+        <span class="schart-peak" id="csim-peak-rev"></span>
+      </div>
+      <div class="sens-charts">
+        <div>
+          <div class="schart-lbl">① Expected Revenue&nbsp;<span style="font-weight:400;text-transform:none;font-size:9px;color:var(--t4)">(Median Price × Sell Rate)</span></div>
+          <div class="schart-wrap"><canvas id="csim-chart-rev"></canvas></div>
+        </div>
+        <div>
+          <div class="schart-lbl">② Bidding Heat&nbsp;<span style="font-weight:400;text-transform:none;font-size:9px;color:var(--t4)">(Bidders · Bid Count)</span></div>
+          <div class="schart-wrap"><canvas id="csim-chart-heat"></canvas></div>
+        </div>
+      </div>
+    </div>
+    <div class="ocard-sim ocard-ghost-sim">
+      <div class="card-lbl-sim">📌 ${s.name} — Seller Insights</div>
+      <div class="ins-sim">${s.insights.map((ins,i)=>`<div class="ins-row"><span class="ins-num">${i+1}.</span><span>${ins}</span></div>`).join('')}</div>
+    </div>`;
+  // Render charts after DOM update
+  setTimeout(()=>csimRenderCharts(sens), 0);
+}
+// Init
+
+// ── Sensitivity Charts ───────────────────────────────────────────────────────
+let csimRevenueChart = null, csimHeatChart = null;
+
+function csimRenderCharts(sens) {
+  const labels = sens.map(s => (s.ratio*100).toFixed(0)+'%');
+  const revData = sens.map(s => +(s.p50 * s.str).toFixed(1));
+  const biddersData = sens.map(s => +s.avgBidders.toFixed(1));
+  const bidsData = sens.map(s => +s.avgBids.toFixed(1));
+
+  const peakIdx = revData.indexOf(Math.max(...revData));
+  const peakEl = document.getElementById('csim-peak-rev');
+  if (peakEl) peakEl.textContent = '★ peak at ' + labels[peakIdx];
+
+  const GRID = { color:'rgba(0,0,0,0.05)' };
+  const TICK = { color:'#aaa', font:{ size:10 } };
+  const BASE = { responsive:true, maintainAspectRatio:false,
+    animation:{ duration:600, easing:'easeOutQuart' },
+    plugins:{ legend:{ display:false }, tooltip:{ callbacks:{
+      title: (items) => 'Start at ' + items[0].label + ' of market value'
+    }}}};
+
+  // ① Expected Revenue chart
+  if (csimRevenueChart) csimRevenueChart.destroy();
+  const c1 = document.getElementById('csim-chart-rev');
+  if (c1) {
+    csimRevenueChart = new Chart(c1, {
+      type:'line',
+      data:{
+        labels,
+        datasets:[{
+          label:'Expected Revenue ($)',
+          data: revData,
+          borderColor:'#378ADD',
+          backgroundColor:'rgba(55,138,221,0.10)',
+          fill:true, tension:.4, pointRadius:4,
+          pointBackgroundColor: revData.map((_,i)=>i===peakIdx?'#378ADD':'#fff'),
+          pointBorderColor:'#378ADD',
+          pointBorderWidth:2, borderWidth:2
+        }]
+      },
+      options:{...BASE,
+        plugins:{...BASE.plugins,
+          tooltip:{callbacks:{
+            title:items=>'Start at '+items[0].label+' of value',
+            label:item=>' Expected revenue: $'+item.raw.toFixed(0)
+          }}
+        },
+        scales:{
+          x:{ ticks:{...TICK}, grid:GRID,
+              title:{display:true,text:'Starting price (% of market value)',color:'#aaa',font:{size:9}}},
+          y:{ ticks:{...TICK,callback:v=>'$'+v}, grid:GRID,
+              title:{display:true,text:'p50 × Sell Rate',color:'#aaa',font:{size:9}}}
+        }
+      }
+    });
+  }
+
+  // ② Bidding Heat chart (dual axis)
+  if (csimHeatChart) csimHeatChart.destroy();
+  const c2 = document.getElementById('csim-chart-heat');
+  if (c2) {
+    csimHeatChart = new Chart(c2, {
+      type:'line',
+      data:{
+        labels,
+        datasets:[
+          { label:'Avg Bidders',  data:biddersData, borderColor:'#1D9E75',
+            backgroundColor:'rgba(29,158,117,0.08)', fill:true,
+            tension:.4, pointRadius:3, borderWidth:2, yAxisID:'y' },
+          { label:'Avg Bid Count', data:bidsData, borderColor:'#BA7517',
+            backgroundColor:'transparent', fill:false,
+            tension:.4, pointRadius:3, borderWidth:2,
+            borderDash:[4,3], yAxisID:'y2' }
+        ]
+      },
+      options:{...BASE,
+        plugins:{
+          legend:{display:true, position:'bottom',
+            labels:{color:'#888', font:{size:9}, boxWidth:8, padding:10}},
+          tooltip:{callbacks:{
+            title:items=>'Start at '+items[0].label+' of value'
+          }}
+        },
+        scales:{
+          x:{ ticks:{...TICK}, grid:GRID,
+              title:{display:true,text:'Starting price (% of market value)',color:'#aaa',font:{size:9}}},
+          y:{ ticks:{...TICK}, grid:GRID, position:'left',
+              title:{display:true,text:'Bidders',color:'#1D9E75',font:{size:9}}},
+          y2:{ ticks:{...TICK}, grid:{display:false}, position:'right',
+               title:{display:true,text:'Bid Count',color:'#BA7517',font:{size:9}}}
+        }
+      }
+    });
+  }
+}
+
+// ── AI Live Script Generator ─────────────────────────────────────────────────
+let aiLang = 'zh';
+let aiLastCtx = null;
+
+function aiSetLang(lang, btn) {
+  aiLang = lang;
+  document.querySelectorAll('.ai-lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function aiUpdateCtx(ctx) {
+  aiLastCtx = ctx;
+  const s = CSIM_SCHEMAS[ctx.cat];
+  const g = CSIM_GOALS[ctx.goal];
+  const el = document.getElementById('ai-ctx-display');
+  if (el) el.innerHTML = `
+    <span class="ai-ctx-badge">🏷️ ${s.name}</span>&nbsp;
+    <span class="ai-ctx-badge">🎯 ${g.label}</span>&nbsp;
+    <span class="ai-ctx-badge">💰 Est. $${ctx.value}</span>&nbsp;
+    <span class="ai-ctx-badge">📊 p50 $${ctx.p50}</span>&nbsp;
+    <span class="ai-ctx-badge">✅ Sell ${ctx.sellRate}</span>
+    <div style="margin-top:8px;font-size:11px;color:var(--t3)">Script generator is ready — click <strong>✨ Generate Script</strong> to create your custom live auction script.</div>`;
+}
+
+async function aiGenScript() {
+  const btn = document.getElementById('ai-gen-btn');
+  const out = document.getElementById('ai-output');
+  if (!aiLastCtx) {
+    out.innerHTML = '<div class="ai-error">⚠️ Please run the simulator first to provide context for the script.</div>';
+    return;
+  }
+  btn.disabled = true;
+  out.innerHTML = '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>Generating your live auction script with DeepSeek AI…</span></div>';
+  
+  const ctx = aiLastCtx;
+  const s = CSIM_SCHEMAS[ctx.cat];
+  const g = CSIM_GOALS[ctx.goal];
+  
+  const isZh = aiLang === 'zh';
+  const systemPrompt = isZh
+    ? `你是一位资深eBay Live直播拍卖主持人，精通收藏品领域。请为主播生成专业、自然、有吸引力的直播话术脚本，语言简洁有力，符合直播节奏。`
+    : `You are a seasoned eBay Live auction host specializing in collectibles. Generate a professional, natural, and engaging live auction script. Keep language concise and rhythm-friendly for live streaming.`;
+
+  const userPrompt = isZh ? `
+请为以下拍卖商品生成完整的直播话术脚本：
+
+商品信息：
+- 品类：${s.name}（${ctx.catIcon}）
+- 卖家目标：${g.label}
+- 估计市场价：$${ctx.value}
+- 模拟中位成交价：$${ctx.p50}（区间 $${ctx.p10}–$${ctx.p90}）
+- 推荐起拍价：$${ctx.recLo}–$${ctx.recHi}
+- 预计成交率：${ctx.sellRate}
+- 预计竞拍人数：${ctx.bidders}人
+- 重要属性：${ctx.chips.length > 0 ? ctx.chips.map(c=>c.label).join('、') : '无特殊属性'}
+
+请按以下结构生成话术（每段2–4句话）：
+
+【1. 开场白 / 吸引眼球】
+主播上台时的开场钩子，制造期待感
+
+【2. 商品介绍 / 价值塑造】
+重点突出商品品类特点、稀缺性和市场价值
+
+【3. 竞价激活 / 制造紧张感】
+起拍价公布 + 激励观众出手
+
+【4. 竞拍高潮 / 推波助澜】
+在激烈竞价时使用的话术，维持热度
+
+【5. 收尾锁单 / 感谢成交】
+临近结束时的倒计时话术和成交祝贺
+
+【主持技巧提示】
+3条专门针对该品类的主持技巧` 
+    : `
+Generate a complete live auction script for this item:
+
+Item Details:
+- Category: ${s.name} (${ctx.catIcon})
+- Seller Goal: ${g.label}
+- Estimated Market Value: $${ctx.value}
+- Simulated Median Sale Price: $${ctx.p50} (range $${ctx.p10}–$${ctx.p90})
+- Recommended Starting Price: $${ctx.recLo}–$${ctx.recHi}
+- Projected Sell Rate: ${ctx.sellRate}
+- Expected Bidders: ${ctx.bidders}
+- Key Attributes: ${ctx.chips.length > 0 ? ctx.chips.map(c=>c.label).join(', ') : 'Standard item'}
+
+Please generate a script with these sections (2–4 sentences each):
+
+[1. Opening Hook]
+The attention-grabbing opener when you go live
+
+[2. Item Introduction / Value Framing]
+Highlight category specifics, scarcity, and market value
+
+[3. Bid Activation / Creating Urgency]
+Announcing the starting price + motivating viewers to bid
+
+[4. Bidding Climax / Sustaining Energy]
+Script for when the bidding gets competitive
+
+[5. Closing / Thank You]
+Countdown language and congratulations as the auction closes
+
+[Host Tips for This Category]
+3 category-specific hosting tips`;
+
+  try {
+    const resp = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer sk-81673fe07598404fb7efa881f799820f'
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        temperature: 0.8,
+        max_tokens: 1500
+      })
+    });
+    if (!resp.ok) {
+      const err = await resp.text();
+      throw new Error('API error ' + resp.status + ': ' + err.slice(0,200));
+    }
+    const data = await resp.json();
+    const text = data.choices[0].message.content;
+    aiRenderScript(text, isZh);
+  } catch (e) {
+    out.innerHTML = `<div class="ai-error">❌ Generation failed: ${e.message}<br/><br/>Check your network connection or API key.</div>`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function aiRenderScript(text, isZh) {
+  const out = document.getElementById('ai-output');
+  // Parse sections: look for numbered or bracketed section headers
+  const sectionRe = isZh
+    ? /【(.+?)】/g
+    : /\[(.+?)\]/g;
+  const icons = isZh
+    ? ['🎤','💎','🔥','⚡','🎉','💡']
+    : ['🎤','💎','🔥','⚡','🎉','💡'];
+  
+  const parts = text.split(isZh ? /(?=【)/ : /(?=\[)/);
+  if (parts.length <= 1) {
+    // No sections found — render as single block
+    out.innerHTML = `<div class="ai-section"><div class="ai-section-body">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>`;
+    return;
+  }
+  let html = '';
+  parts.forEach((part, i) => {
+    if (!part.trim()) return;
+    const hMatch = part.match(isZh ? /^【(.+?)】/ : /^\[(.+?)\]/);
+    if (hMatch) {
+      const title = hMatch[1];
+      const body = part.slice(hMatch[0].length).trim();
+      const icon = icons[i] || '📌';
+      html += `<div class="ai-section">
+        <div class="ai-section-ttl">${icon} ${title.replace(/</g,'&lt;')}</div>
+        <div class="ai-section-body">${body.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'\n')}</div>
+      </div>`;
+    } else {
+      html += `<div class="ai-section"><div class="ai-section-body">${part.trim().replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div></div>`;
+    }
+  });
+  out.innerHTML = html || `<div class="ai-section"><div class="ai-section-body">${text}</div></div>`;
+}
+
+csimRenderForm();
+</script>
 </body>
 </html>

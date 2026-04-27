@@ -16,9 +16,19 @@ GRID_INTERACTIVE_DUR = [30, 60, 90]
 
 def _run_auction(market_price: float, start_price: float,
                  price_interval: float, duration: int, viewers: int) -> dict:
-    n = max(2, int(viewers * 0.25))
-    valuations  = np.random.normal(market_price * 0.85, market_price * 0.2, n).clip(min=1.0)
-    active_prob = np.clip(np.random.normal(0.4, 0.1, n), 0.05, 0.95)
+    n_pool = max(3, int(viewers * 0.06))
+    valuations_all = np.random.normal(market_price * 0.68, market_price * 0.15, n_pool).clip(min=1.0)
+
+    interested = valuations_all >= start_price
+    if not np.any(interested):
+        return {"final_price": start_price, "bid_count": 0, "sold": False}
+
+    valuations = valuations_all[interested]
+    n = len(valuations)
+    budgets    = valuations * (1.0 + np.random.uniform(0, 0.10, n))
+    base_prob  = np.clip(np.random.normal(0.35, 0.08, n), 0.05, 0.80)
+    fatigue    = np.zeros(n)
+    active     = np.ones(n, dtype=bool)
 
     price = float(start_price)
     bids  = 0
@@ -26,11 +36,18 @@ def _run_auction(market_price: float, start_price: float,
     for _ in range(duration):
         order = np.random.permutation(n)
         for i in order:
-            if price < valuations[i] and np.random.rand() < active_prob[i]:
+            if not active[i]:
+                continue
+            if price >= budgets[i]:
+                active[i] = False
+                continue
+            prob = base_prob[i] * (0.97 ** fatigue[i])
+            if price < valuations[i] and np.random.rand() < prob:
                 price += price_interval
                 bids  += 1
+                fatigue[i] += 1
 
-    return {"final_price": price, "bid_count": bids, "sold": price > start_price}
+    return {"final_price": price, "bid_count": bids, "sold": bids > 0}
 
 
 def _simulate_many(n_sim: int, market_price: float, start_price: float,
