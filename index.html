@@ -745,7 +745,7 @@ function csimOneAuction(adjVal,sp,viewers,vol){
   let fp;
   if(N===1||vals[1]<sp){fp=sp;}
   else{const inc=Math.max(0.5,csimGauss(bp.inc,bp.inc*0.45));fp=Math.min(vals[0],vals[1]+inc);}
-  return{sold:true,fp,bc:Math.max(1,Math.round(csimGauss(N*2.1,N*0.8))),nb:N};
+  return{sold:true,fp:fp*0.7,bc:Math.max(1,Math.round(csimGauss(N*2.1,N*0.8))),nb:N};
 }
 function csimMC(adjVal,sp,viewers,vol,n=300){
   const res=Array.from({length:n},()=>csimOneAuction(adjVal,sp,viewers,vol));
